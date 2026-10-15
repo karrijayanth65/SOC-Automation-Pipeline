@@ -4,7 +4,7 @@
 
 ## Components and boundaries
 
-Use an isolated lab with Windows telemetry feeding Splunk, an n8n instance and DFIR-IRIS. Slack, OpenAI, AbuseIPDB and VirusTotal require separate configured accounts. Record the exact versions you install; the export retains the source's OpenAI node v2, HTTP Request v4.3, Webhook v2.1, Code v2, If v2.2 and Slack v2.3 node definitions. Confirm these are supported by your installed n8n release before import.
+Use an isolated lab with Windows telemetry feeding Splunk, an n8n instance and DFIR-IRIS. Slack, OpenAI, AbuseIPDB and VirusTotal require separate configured accounts. Record the exact versions you install; the export uses OpenAI node v2, HTTP Request v4.3, Webhook v2.1, Code v2, If v2.2 and Slack v2.3 node definitions. Confirm these are supported by your installed n8n release before import.
 
 Keep attack simulation traffic on the private lab network. The orchestration server needs controlled HTTPS egress for cloud APIs; a NAT network is not proof that no traffic leaves the host. Use TLS and limit inbound access to known senders. Use separate lab accounts and never place credentials in workflow exports or screenshots.
 

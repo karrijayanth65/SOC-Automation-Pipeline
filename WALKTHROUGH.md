@@ -6,13 +6,13 @@
 
 ![n8n workflow canvas](images/workflow-canvas.png)
 
-Five alert types converge on a shared analysis path. The reboot adds normalization ahead of model analysis and validates the report before downstream requests. [View full-size canvas](images/workflow-canvas.png).
+Five alert types converge on a shared analysis path. The current export adds normalization ahead of model analysis and validates the report before downstream requests. [View full-size canvas](images/workflow-canvas.png).
 
 ## Case handoff
 
 ![DFIR-IRIS case view](images/dfir-iris-case.png)
 
-IRIS provides a place to retain the original alert and analyst-facing summary. The reboot carries the original source SID and event timestamp into its alert payload and tags the model advisory for review. [View full-size case](images/dfir-iris-case.png).
+IRIS provides a place to retain the original alert and analyst-facing summary. The formatter carries the original source SID and event timestamp into its alert payload and tags the model advisory for review. [View full-size case](images/dfir-iris-case.png).
 
 ## Analyst notification
 

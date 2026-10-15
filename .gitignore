@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+node_modules/
+private/
+test-output/
+*.key
+*.pem
+*.pfx
+AGENTS.md
+agent.md
+Bible.md

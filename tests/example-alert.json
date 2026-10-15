@@ -1,0 +1,12 @@
+{
+  "search_name": "LAB - Authentication failure burst",
+  "sid": "fixture-auth-001",
+  "result": {
+    "_time": "2026-10-15T12:00:00Z",
+    "host": "LAB-WIN01",
+    "user": "lab-user",
+    "src_ip": "192.168.1.25",
+    "count": 3,
+    "attack_type": "Repeated authentication failures"
+  }
+}

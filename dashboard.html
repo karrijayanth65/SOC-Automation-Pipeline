@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SOC Automation Pipeline architecture, detection routes, offline validation and deployment checklist.">
+  <title>SOC Automation Pipeline · Project overview</title>
+  <style>
+    :root { color-scheme: light; --ink: #203847; --muted: #536a78; --line: #dbe4e9; --accent: #306d75; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f7f9; color: var(--ink); font: 16px/1.65 system-ui, "Segoe UI", sans-serif; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:focus-visible, summary:focus-visible { outline: 3px solid #30767f; outline-offset: 4px; }
+    .skip { position: absolute; top: -100px; left: 16px; padding: 10px; background: #fff; }
+    .skip:focus { top: 8px; }
+    .shell { max-width: 1160px; margin: auto; padding: 0 28px; }
+    header { background: #fff; border-bottom: 1px solid var(--line); }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding-top: 20px; padding-bottom: 20px; }
+    .brand { font-weight: 750; letter-spacing: -.03em; }
+    nav { display: flex; flex-wrap: wrap; gap: 18px; font-size: 14px; }
+    nav a { text-decoration: none; }
+    main { padding-bottom: 32px; }
+    .hero { padding: 40px 0 24px; max-width: 850px; }
+    .eyebrow { margin: 0 0 10px; text-transform: uppercase; letter-spacing: .14em; color: var(--accent); font-size: 12px; font-weight: 750; }
+    h1 { margin: 0; font-size: clamp(32px, 5vw, 48px); line-height: 1.15; letter-spacing: -.04em; }
+    .lead { margin: 18px 0; max-width: 760px; color: var(--muted); font-size: 18px; }
+    .pill { display: inline-block; background: #eef5f5; color: #285a62; border: 1px solid #d0e1e2; border-radius: 30px; font-size: 12px; padding: 4px 12px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 8px 0 28px; }
+    .stat { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; }
+    .stat strong { display: block; font-size: 34px; line-height: 1.3; letter-spacing: -.04em; }
+    .stat span { color: var(--muted); font-size: 14px; }
+    section { margin: 0 0 24px; padding: 26px 28px; border: 1px solid var(--line); border-radius: 14px; background: #fff; scroll-margin-top: 16px; }
+    h2 { margin: 0 0 8px; font-size: 24px; line-height: 1.3; letter-spacing: -.025em; }
+    h3 { margin: 0 0 6px; font-size: 17px; }
+    p { margin: 8px 0 16px; }
+    .muted { color: var(--muted); }
+    figure { margin: 20px 0; }
+    figure img { display: block; width: 100%; height: auto; }
+    figcaption { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; margin: 16px 0 6px; text-align: left; font-size: 14px; }
+    th { color: #3e5967; background: #f2f6f7; font-weight: 650; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    caption { text-align: left; margin: 0 0 8px; color: var(--muted); }
+    pre { overflow-x: auto; background: #eff3f5; border-radius: 8px; padding: 16px; }
+    code { font: 14px ui-monospace, Consolas, monospace; }
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .tile { padding: 18px; background: #f7f9fa; border: 1px solid var(--line); border-radius: 10px; }
+    .tile p { margin: 0; font-size: 14px; color: var(--muted); }
+    details { border-top: 1px solid var(--line); padding: 14px 0; }
+    summary { cursor: pointer; font-weight: 650; }
+    details p { margin: 12px 0 0; color: var(--muted); }
+    ol { padding-left: 22px; }
+    li { margin: 8px 0; }
+    footer { border-top: 1px solid var(--line); padding: 24px 0; font-size: 13px; color: var(--muted); background: #fff; }
+    footer p { margin: 0; }
+    @media (max-width: 700px) {
+      .shell { padding-left: 18px; padding-right: 18px; }
+      .topbar { align-items: flex-start; flex-direction: column; gap: 10px; }
+      .hero { padding-top: 28px; }
+      .stats { gap: 8px; }
+      .stat { padding: 14px 10px; }
+      .stat strong { font-size: 27px; }
+      .stat span { font-size: 12px; }
+      section { padding: 20px 16px; }
+      .columns { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: #fff; font-size: 11pt; }
+      header nav, .skip { display: none; }
+      .hero { padding-top: 20px; }
+      section, .stats { break-inside: avoid; }
+      .shell { max-width: none; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to overview</a>
+  <header><div class="shell topbar">
+    <div class="brand">SOC / Automation Pipeline</div>
+    <nav aria-label="Page sections"><a href="#architecture">Architecture</a><a href="#detections">Detections</a><a href="#validation">Validation</a><a href="#deployment">Deployment</a></nav>
+  </div></header>
+  <main id="main" class="shell">
+    <div class="hero">
+      <p class="eyebrow">Project overview</p>
+      <h1>One alert.<br>A traceable investigation handoff.</h1>
+      <p class="lead">Windows telemetry flows through Splunk and n8n to a structured advisory, an IRIS case handoff and a Slack notification.</p>
+      <span class="pill">Offline validation snapshot · 15 October 2026</span>
+    </div>
+    <div class="stats" aria-label="Repository snapshot">
+      <div class="stat"><strong>58</strong><span>passing offline tests</span></div>
+      <div class="stat"><strong>5</strong><span>detection entry points</span></div>
+      <div class="stat"><strong>6</strong><span>architecture stages</span></div>
+    </div>
+    <section id="architecture" aria-labelledby="architecture-title">
+      <p class="eyebrow">01 / System flow</p>
+      <h2 id="architecture-title">A reviewable alert-to-case handoff</h2>
+      <p class="muted">Input checks come before model analysis. Report validation separates an advisory from the payloads prepared for downstream services.</p>
+      <figure>
+        <img src="images/pipeline.svg" width="1200" height="570" alt="Six stages: receive, normalize, analyze and enrich, validate, create case, notify analyst.">
+        <figcaption>Architecture illustration. <a href="images/pipeline.svg">Open full-size diagram</a>.</figcaption>
+      </figure>
+      <div class="columns">
+        <div class="tile"><h3>Preserve the source</h3><p>Carry the Splunk SID, host and event time into the alert payload. Bind indicator tools to normalized fields, not model-selected replacements.</p></div>
+        <div class="tile"><h3>Preserve analyst control</h3><p>High/Critical scores take the Slack branch after escalation. Recommendations remain advisory; response approval belongs to the analyst.</p></div>
+      </div>
+    </section>
+    <section id="detections" aria-labelledby="detections-title">
+      <p class="eyebrow">02 / Detection inputs</p>
+      <h2 id="detections-title">Five routes, one field contract</h2>
+      <p class="muted">Each request carries one result object, a stable SID, a source host and an unambiguous event time. <a href="DETECTIONS.md">Read the SPL examples and interpretation guidance</a>.</p>
+      <div class="table-wrap"><table>
+        <caption>Detection coverage represented by the workflow inputs</caption>
+        <thead><tr><th scope="col">Route</th><th scope="col">Telemetry</th><th scope="col">Analyst focus</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">IP</th><td>Windows Security 4625</td><td>Failures by host, account and source address</td></tr>
+          <tr><th scope="row">Hash</th><td>Sysmon process creation</td><td>Image context and validated SHA-256 reputation</td></tr>
+          <tr><th scope="row">Scan</th><td>Windows Firewall drops</td><td>Port spread, frequency and client context</td></tr>
+          <tr><th scope="row">Admin</th><td>Windows Security 4720 / 4732</td><td>Account changes, membership and authorization</td></tr>
+          <tr><th scope="row">PowerShell</th><td>Sysmon command lines</td><td>Flags, parent image, user and execution intent</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="validation" aria-labelledby="validation-title">
+      <p class="eyebrow">03 / Local checks</p>
+      <h2 id="validation-title">Deterministic checks, no API keys</h2>
+      <p>The 58-test offline suite checks timestamp parsing, field limits, indicator policy, model-response schema, severity boundaries, workflow links and embedded-code consistency.</p>
+      <pre><code>node --test tests/offline.test.cjs</code></pre>
+      <details><summary>Input-boundary checks</summary><p>Missing identifiers, invalid or ambiguous dates, nested values, oversized fields, invalid hashes and disallowed IP ranges are checked against the normalizer.</p></details>
+      <details><summary>Report-formatting checks</summary><p>Fixed fixtures exercise strict JSON validation, numeric score bounds, deterministic severity, Slack escaping and the expected IRIS payload fields.</p></details>
+      <details><summary>Workflow-export checks</summary><p>The suite checks graph targets, webhook connections, the inactive setting, credential/TLS safeguards and equality between readable JavaScript and embedded Code nodes.</p></details>
+      <p><a href="tests/offline.test.cjs">Inspect the tests</a> · <a href="workflows/soc-pipeline.json">Inspect the export</a></p>
+    </section>
+    <section id="deployment" aria-labelledby="deployment-title">
+      <p class="eyebrow">04 / Deployment path</p>
+      <h2 id="deployment-title">Configure, then trace one alert</h2>
+      <ol>
+        <li>Prepare Windows telemetry, Splunk, n8n and DFIR-IRIS in an approved lab.</li>
+        <li>Run the offline suite, then import the workflow inactive.</li>
+        <li>Bind credentials, trusted service URLs, IRIS IDs and the Slack channel.</li>
+        <li>Send one authorized alert to an authenticated test webhook.</li>
+        <li>Inspect tool traces, IRIS identifiers and notification delivery before activation.</li>
+      </ol>
+      <p><a href="SETUP.md">Follow the acceptance checklist</a> · <a href="WALKTHROUGH.md">View the screenshot walkthrough</a></p>
+    </section>
+  </main>
+  <footer><div class="shell"><p>Static project overview—not a live service monitor. Scope, credits and execution-verification status are centralized in the <a href="README.md#credits-and-verification-status">README closing note</a>. <a href="LICENSE">MIT license</a>.</p></div></footer>
+</body>
+</html>

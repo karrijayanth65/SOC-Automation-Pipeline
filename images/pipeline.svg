@@ -1,32 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="570" viewBox="0 0 1200 570" role="img" aria-labelledby="title desc">
 <title id="title">SOC Automation Pipeline architecture</title>
-<desc id="desc">Splunk alerts enter authenticated n8n webhooks, normalize source fields, receive model analysis with bound indicator lookups, pass report validation, create an IRIS alert and case, then notify Slack for high or critical scores. Analysts review recommendations.</desc>
-<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#347c84"/></marker></defs>
-<rect width="1200" height="570" rx="20" fill="#f4f7f8"/>
-<rect width="1200" height="125" rx="20" fill="#142a3c"/>
-<path d="M0 100H1200V125H0Z" fill="#142a3c"/>
+<desc id="desc">Illustrative architecture: authenticated Splunk intake, normalization, model analysis with optional indicator tools, validation, IRIS case handoff, and High or Critical Slack notification. Analysts approve response actions.</desc>
+<defs>
+<pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#dfe6ea"/></pattern>
+<marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#577e85" stroke-width="1.5" stroke-linejoin="round"/></marker>
+<g id="search" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="17" cy="16" r="8"/><path d="M23 22L30 29M13 16H21M17 12V20"/></g>
+<g id="filter" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 10H32L23 20V29L17 32V20ZM12 5H28"/></g>
+<g id="circuit" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="11" y="11" width="18" height="18" rx="4"/><path d="M16 6V11M24 6V11M16 29V34M24 29V34M6 16H11M6 24H11M29 16H34M29 24H34M16 20L19 23L25 17"/></g>
+<g id="shield" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 6L32 11V20C32 27 25 31 20 34C15 31 8 27 8 20V11ZM14 20L18 24L26 16"/></g>
+<g id="folder" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 13V9H17L21 13H34V31H6ZM6 16H34M16 24H24M20 20V28"/></g>
+<g id="bell" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M10 27H30L27 23V16C27 7 13 7 13 16V23ZM17 32H23M20 5V8M6 14L5 20M34 14L35 20"/></g>
+</defs>
+<rect x="1" y="1" width="1198" height="568" rx="18" fill="#f8fafb" stroke="#d9e2e7"/>
+<rect x="20" y="120" width="1160" height="340" fill="url(#grid)"/>
 <g font-family="Segoe UI,Arial,sans-serif">
-<text x="42" y="43" fill="#8cd7d4" font-size="14" font-weight="700" letter-spacing="2">SOC AUTOMATION PIPELINE</text>
-<text x="42" y="83" fill="#ffffff" font-size="30" font-weight="700">One alert. Structured context. A reviewable handoff.</text>
-<g fill="#ffffff" stroke="#c6d4da" stroke-width="1.5">
-<rect x="40" y="155" width="340" height="126" rx="12"/><rect x="430" y="155" width="340" height="126" rx="12"/><rect x="820" y="155" width="340" height="126" rx="12"/>
-<rect x="40" y="330" width="340" height="126" rx="12"/><rect x="430" y="330" width="340" height="126" rx="12"/><rect x="820" y="330" width="340" height="126" rx="12"/>
+<rect x="32" y="28" width="4" height="58" rx="2" fill="#397b83"/>
+<text x="50" y="44" fill="#39707a" font-size="13" font-weight="700" letter-spacing="1.8">SOC AUTOMATION PIPELINE</text>
+<text x="50" y="78" fill="#203847" font-size="28" font-weight="700">From alert to analyst, with context intact.</text>
+<text x="50" y="105" fill="#526776" font-size="15">Collect → normalize → enrich → validate → hand off</text>
+<g fill="#fff" stroke="#d4dfe5" stroke-width="1.4">
+<rect x="32" y="140" width="348" height="136" rx="12"/><rect x="426" y="140" width="348" height="136" rx="12"/><rect x="820" y="140" width="348" height="136" rx="12"/>
+<rect x="32" y="324" width="348" height="136" rx="12"/><rect x="426" y="324" width="348" height="136" rx="12"/><rect x="820" y="324" width="348" height="136" rx="12"/>
 </g>
-<g fill="#142a3c" font-size="22" font-weight="700">
-<text x="62" y="193">01 / Receive</text><text x="452" y="193">02 / Normalize</text><text x="842" y="193">03 / Analyze + enrich</text>
-<text x="842" y="368">04 / Validate report</text><text x="452" y="368">05 / Create case</text><text x="62" y="368">06 / Notify analyst</text>
+<g fill="#edf4f4"><rect x="48" y="157" width="46" height="46" rx="10"/><rect x="442" y="157" width="46" height="46" rx="10"/><rect x="836" y="157" width="46" height="46" rx="10"/><rect x="836" y="341" width="46" height="46" rx="10"/><rect x="442" y="341" width="46" height="46" rx="10"/><rect x="48" y="341" width="46" height="46" rx="10"/></g>
+<g color="#39717a"><use href="#search" x="51" y="160"/><use href="#filter" x="445" y="160"/><use href="#circuit" x="839" y="160"/><use href="#shield" x="839" y="344"/><use href="#folder" x="445" y="344"/><use href="#bell" x="51" y="344"/></g>
+<g fill="#203847" font-size="20" font-weight="700"><text x="108" y="187">Receive</text><text x="502" y="187">Normalize</text><text x="896" y="187">Analyze + enrich</text><text x="896" y="371">Validate</text><text x="502" y="371">Create case</text><text x="108" y="371">Notify analyst</text></g>
+<g fill="#6b818d" font-size="13" font-weight="700"><text x="344" y="164">01</text><text x="738" y="164">02</text><text x="1132" y="164">03</text><text x="1132" y="348">04</text><text x="738" y="348">05</text><text x="344" y="348">06</text></g>
+<g fill="#4e6574" font-size="15">
+<text x="52" y="229">Splunk → n8n authenticated webhook</text><text x="52" y="252">Five detection entry points</text>
+<text x="446" y="229">Allowlist fields · preserve event time</text><text x="446" y="252">Check host, SID, IP and SHA-256</text>
+<text x="840" y="229">Model advisory + optional IOC tools</text><text x="840" y="252">AbuseIPDB · VirusTotal</text>
+<text x="840" y="413">Reject malformed JSON and scores</text><text x="840" y="436">Compute severity deterministically</text>
+<text x="446" y="413">DFIR-IRIS alert → case</text><text x="446" y="436">Retain source alert and advisory</text>
+<text x="52" y="413">High / Critical → Slack</text><text x="52" y="436">Analyst reviews response advice</text>
 </g>
-<g fill="#4b6476" font-size="16">
-<text x="62" y="226">Splunk → n8n header-auth webhook</text><text x="62" y="252">Five detection entry points</text>
-<text x="452" y="226">Allowlist fields / preserve event time</text><text x="452" y="252">Validate host, SID and indicators</text>
-<text x="842" y="226">LLM advisory + optional IOC tools</text><text x="842" y="252">AbuseIPDB / VirusTotal</text>
-<text x="842" y="401">Reject malformed JSON or scores</text><text x="842" y="427">Compute severity deterministically</text>
-<text x="452" y="401">DFIR-IRIS alert → case</text><text x="452" y="427">Keep original alert with advisory</text>
-<text x="62" y="401">High / Critical → Slack</text><text x="62" y="427">Response actions require approval</text>
-</g>
-<g stroke="#347c84" stroke-width="3" fill="none" marker-end="url(#arrow)">
-<path d="M382 218H418"/><path d="M772 218H808"/><path d="M990 284V318"/><path d="M818 393H782"/><path d="M428 393H392"/>
-</g>
-<rect x="40" y="488" width="1120" height="48" rx="8" fill="#e3eeee"/>
-<text x="60" y="518" fill="#235f66" font-size="16">Fail closed on malformed input • Keep credentials in n8n • Never treat model advice as a containment action</text>
+<g fill="none" stroke="#577e85" stroke-width="2.3" marker-end="url(#arrow)"><path d="M385 208H418"/><path d="M779 208H812"/><path d="M994 281V316"/><path d="M815 392H782"/><path d="M421 392H388"/></g>
+<path d="M32 490H1168" stroke="#d9e2e7"/>
+<g fill="#4e6574" font-size="14"><text x="50" y="522">Authenticated intake</text><text x="358" y="522">Credentials stay in n8n</text><text x="713" y="522">Response actions require analyst approval</text></g>
+<g fill="#64908e"><circle cx="38" cy="517" r="3"/><circle cx="346" cy="517" r="3"/><circle cx="701" cy="517" r="3"/></g>
 </g></svg>

@@ -6,7 +6,9 @@ Alert enrichment, structured triage and analyst handoff.
 
 A compact SOC automation project that brings Windows telemetry, indicator enrichment and case management into one readable workflow. Alerts keep their original source and event time as they move from detection to a structured advisory, a case record and an analyst notification.
 
-[Setup](SETUP.md) · [Detection queries](DETECTIONS.md) · [Walkthrough](WALKTHROUGH.md) · [Workflow export](workflows/soc-pipeline.json) · [MIT license](LICENSE)
+[Setup](SETUP.md) · [Detection queries](DETECTIONS.md) · [Walkthrough](WALKTHROUGH.md) · [HTML overview](dashboard.html) · [Workflow export](workflows/soc-pipeline.json) · [MIT license](LICENSE)
+
+For a browser-friendly project summary, download the repository and open `dashboard.html` locally. GitHub displays that file as source; it is not a hosted live dashboard.
 
 ## Pipeline architecture
 
@@ -170,16 +172,39 @@ node --test tests/offline.test.cjs
 
 ```text
 SOC-Automation-Pipeline/
-├── README.md / SETUP.md / DETECTIONS.md / WALKTHROUGH.md
+├── .gitattributes
+├── .gitignore
+├── .markdownlint.json
+├── README.md
+├── SETUP.md
+├── DETECTIONS.md
+├── WALKTHROUGH.md
+├── dashboard.html                  Static HTML project overview
 ├── LICENSE
-├── workflows/       n8n export and readable JavaScript node sources
-├── tests/           Offline checks and a synthetic example alert
-└── images/          Pipeline diagram and ten UI captures
+├── workflows/
+│   ├── soc-pipeline.json           Inactive n8n export
+│   ├── normalize-alert.js         Input checks and indicator policy
+│   └── format-report.js           Report validation and handoff fields
+├── tests/
+│   ├── example-alert.json          Synthetic input fixture
+│   └── offline.test.cjs            Dependency-free automated checks
+└── images/
+    ├── pipeline.svg               Icon-based architecture illustration
+    ├── workflow-canvas.png
+    ├── slack-notification.png
+    ├── dfir-iris-case.png
+    ├── dfir-iris-cases-list.png
+    ├── vmware-lab-overview.png
+    ├── vmware-network-config.png
+    ├── splunk-alerts.png
+    ├── splunk-brute-force-detection.png
+    ├── splunk-admin-detection.png
+    └── sysmon-event-viewer.png
 ```
 
 ## Technology stack
 
-`Splunk` · `n8n` · `OpenAI` · `AbuseIPDB` · `VirusTotal` · `DFIR-IRIS` · `Slack` · `Windows` · `Sysmon` · `VMware` · `JavaScript`
+`Splunk` · `n8n` · `OpenAI` · `AbuseIPDB` · `VirusTotal` · `DFIR-IRIS` · `Slack` · `Windows` · `Sysmon` · `VMware` · `JavaScript` · `HTML/CSS`
 
 ## Credits and verification status
 

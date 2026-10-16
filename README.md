@@ -36,14 +36,11 @@ That combination matters: a useful handoff needs investigation context as well a
 | Context quality / 5 | 3.60 | 3.00 | 4.29 |
 | Average analyst steps | 6.6 | 3.0 | 3.9 |
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="screenshots/triage-comparison-dark.png">
-  <img src="screenshots/triage-comparison.png" alt="Grouped bars comparing AI Full, AI No Tools and Manual across speed, reported accuracy, step economy, context quality and action quality">
-</picture>
+![Outline-only radar comparing AI Full, AI No Tools and Manual across speed, action quality, context quality, efficiency and reported accuracy](screenshots/triage-comparison.png)
 
 [Explore the records and calculations](results/README.md) · [Use the interactive dashboard](results/dashboard.html).
 
-Bars use a higher-is-better 0–100 index, with [formulas and source distinctions](results/README.md#grouped-chart-scales) documented alongside the original radar. AI Full leads on speed and quality; AI No Tools uses fewer steps because it omits enrichment, not because its investigation is more complete. All modes were reported at 100% accuracy on pre-validated lab scenarios; this is not recomputed from the CSV or evidence of real-world accuracy.
+The radar uses a higher-is-better 0–100 index, with [formulas and source distinctions](results/README.md#radar-chart-scales) documented alongside the original radar. Efficiency means step economy: AI No Tools uses fewer steps because it omits enrichment, not because its investigation is more complete. All modes were reported at 100% accuracy on pre-validated lab scenarios; this is not recomputed from the CSV or evidence of real-world accuracy.
 
 ## How the pipeline works
 
@@ -224,7 +221,6 @@ SOC-Automation-Pipeline/
 │   ├── incident-response-workflow.png
 │   ├── pipeline-comparison-radar.png
 │   ├── triage-comparison.png
-│   ├── triage-comparison-dark.png
 │   ├── workflow-canvas.png
 │   ├── slack-notification.png
 │   ├── dfir-iris-case.png

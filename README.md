@@ -1,46 +1,40 @@
 # SOC Automation Pipeline
 
-**Jayanth K · Personal SOC lab project**
+### AI-assisted SOC triage and analyst handoff
 
-Automating alert intake, enrichment-assisted triage and the handoff to an analyst through Splunk, n8n, DFIR-IRIS and Slack.
+> Splunk → n8n → GPT-4.1 Mini → AbuseIPDB + VirusTotal → DFIR-IRIS → Slack
 
-[Lab results](#lab-evaluation-and-manual-effort) · [Skills](#skills-demonstrated) · [Workflow](#workflow-and-analyst-handoff) · [Lab setup](#lab-environment) · [Source and setup](#source-and-reproduction)
+Built by **Jayanth K** in a personal SOC lab. This project connects alert detection, intelligence-assisted analysis, case management and analyst notification, then compares the recorded results against manual triage and model-only analysis.
+
+## Pipeline Architecture
 
 ![SOC automation pipeline overview](screenshots/pipeline-canva.png)
 
-## Lab evaluation and manual effort
+The pipeline receives an alert, preserves its source context, analyzes eligible indicators and prepares a structured case handoff. Investigation and response decisions remain with the analyst.
 
-Across the recorded lab groups, integrated triage averaged **38.1 seconds versus 209.0 seconds manually**—**81.8% lower recorded triage time**. The average recorded analyst-step count fell from **6.6 to 3.9**, a **41.6% reduction** using the unrounded means.
+## What makes this different
 
-![Recorded triage time and analyst-step comparison](screenshots/lab-outcomes.png)
+The project measures how three triage configurations compare in **time, investigation context and analyst effort**. The evaluation contains **15 recorded runs across five scenarios**, with 5 manual, 3 model-only and 7 integrated runs.
 
-| Lab configuration | Runs | Mean triage time | Mean analyst steps | Context quality / 5 |
-|---|---|---|---|---|
-| Manual | 5 | 209.0 s | 6.6 | 3.60 |
-| Model without tools | 3 | 130.0 s | 3.0 | 3.00 |
-| Model with enrichment | 7 | 38.1 s | 3.9 | 4.29 |
+| Metric | Manual baseline | Model only | Fully integrated |
+|---|---|---|---|
+| Average triage time | 209.0 s | 130.0 s | 38.1 s |
+| Recorded time reduction vs manual | — | 37.8% | 81.8% |
+| Action quality / 5 | 3.00 | 4.00 | 4.57 |
+| Context quality / 5 | 3.60 | 3.00 | 4.29 |
+| Average analyst steps | 6.6 | 3.0 | 3.9 |
 
-The workflow brings source context, indicator lookups, a structured advisory and case handoff into one path. This reduces repeated manual searching, copying and report preparation. Analyst steps measure recorded actions, not active analyst time; the time and effort percentages describe the available lab records.
+The integrated configuration combined the shortest recorded mean time with the highest context score. Its recorded analyst-step count was **41.6% lower than manual triage**; the model-only mode used fewer steps because it omitted enrichment lookups.
 
-Model-only runs use fewer steps because they omit enrichment. The integrated mode combines the shortest recorded mean time with more investigation context. Group sizes and scenario coverage differ, and four rows have timing discrepancies; the [full evaluation](results/README.md) retains the calculation and timing notes.
+> These are descriptive lab comparisons with unequal scenario coverage. [Full methodology, timing notes and interactive results](results/README.md).
 
-[Explore the interactive dashboard](results/dashboard.html) · [View all recorded comparison graphics](results/README.md#experiment-visuals) · [Inspect the original CSV](results/evaluation-results.csv)
+![Radar comparison of the recorded triage configurations](screenshots/triage-comparison-dark.png)
 
-## Skills demonstrated
+*Radar indices summarize the recorded comparison. The accuracy axis reflects the original reported result; the CSV has no per-run classification labels. [All comparison graphics](results/README.md#experiment-visuals).*
 
-| Skill | Applied project work |
-|---|---|
-| Detection engineering | SPL searches for authentication failures, process hashes, scanning, account changes and PowerShell |
-| Endpoint investigation | Windows Security and Sysmon context, users, parent processes, command lines and SHA-256 indicators |
-| Workflow automation | Authenticated n8n webhooks, normalization, model/tool orchestration and downstream API requests |
-| Threat-intelligence triage | Source-bound AbuseIPDB and VirusTotal lookups with analyst interpretation |
-| Secure JavaScript | Input contracts, identity checks, bounded model responses, Slack escaping and pinned ATT&CK mapping validation |
-| Case communication | Structured IRIS advisory payloads, case tags and analyst-facing Slack notifications |
-| Engineering quality | Regression tests, source-generated workflow code, canonical chart data and CI checks |
+## Pipeline in Action
 
-## Workflow and analyst handoff
-
-### n8n orchestration
+### n8n Workflow Canvas
 
 ![Recorded n8n workflow canvas](screenshots/workflow-canvas.png)
 
@@ -117,6 +111,36 @@ The [SPL examples](splunk/detection-rules.md) use `index=jayanth-project`. The [
 ### Alternate pipeline view
 
 ![Alternate conceptual pipeline diagram](screenshots/pipeline.svg)
+
+## Project Structure
+
+The main project folders follow the same flow as the lab:
+
+```text
+SOC-Automation-Pipeline/
+├── docs/          # Lab setup, workflow and code explanations
+├── results/       # Recorded evaluation, charts and dashboard
+├── screenshots/   # Architecture, lab and execution images
+├── splunk/        # Detection queries and alert input examples
+├── workflows/     # n8n export and JavaScript node sources
+├── LICENSE
+├── README.md
+└── env.example
+```
+
+Supporting checks are in `tests/`, `scripts/`, `data/` and `.github/`.
+
+## Skills demonstrated
+
+| Skill | Applied project work |
+|---|---|
+| Detection engineering | SPL searches for authentication failures, process hashes, scanning, account changes and PowerShell |
+| Endpoint investigation | Windows Security and Sysmon context, users, parent processes, command lines and SHA-256 indicators |
+| Workflow automation | Authenticated n8n webhooks, normalization, model/tool orchestration and downstream API requests |
+| Threat-intelligence triage | Source-bound AbuseIPDB and VirusTotal lookups with analyst interpretation |
+| Secure JavaScript | Input contracts, identity checks, bounded model responses, Slack escaping and pinned ATT&CK mapping validation |
+| Case communication | Structured IRIS advisory payloads, case tags and analyst-facing Slack notifications |
+| Engineering quality | Regression tests, source-generated workflow code, canonical chart data and CI checks |
 
 ## Source and reproduction
 

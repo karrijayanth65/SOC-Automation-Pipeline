@@ -36,11 +36,11 @@ That combination matters: a useful handoff needs investigation context as well a
 | Context quality / 5 | 3.60 | 3.00 | 4.29 |
 | Average analyst steps | 6.6 | 3.0 | 3.9 |
 
-![Comparison of recorded lab averages: enriched AI triage takes 38.1 seconds versus 209 seconds manually, with higher action and context scores](screenshots/triage-comparison.png)
+![Grouped bars comparing AI Full, AI No Tools and Manual across speed, reported accuracy, efficiency, context quality and action quality](screenshots/triage-comparison.png)
 
 [Explore the records and calculations](results/README.md) · [Use the interactive dashboard](results/dashboard.html).
 
-The comparison graphic uses CSV-derived averages; the original radar is preserved in the results documentation. Reconciliation notes explain four timing mismatches and the integrated step mean of 3.9.
+Bars use a higher-is-better 0–100 index, with [formulas and source distinctions](results/README.md#grouped-chart-scales) documented alongside the original radar. AI Full leads on speed and quality; AI No Tools uses the fewest steps. Reported accuracy is tied, not recomputed from the CSV.
 
 ## How the pipeline works
 

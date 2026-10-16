@@ -38,7 +38,18 @@ The values below are calculated from each mode's available CSV rows.
 
 Relative to the manual average, the recorded model-only time is 37.8% lower and the integrated time is 81.8% lower. These are descriptive comparisons across differently sized groups, not causal or production estimates.
 
-![Recorded lab averages comparing manual triage, AI without tools and AI with enrichment](../screenshots/triage-comparison.png)
+![Five grouped bar clusters comparing AI Full, AI No Tools and Manual on higher-is-better indices](../screenshots/triage-comparison.png)
+
+### Grouped chart scales
+
+The chart separates the three modes within each metric. Every bar starts at zero; a higher index indicates better performance for that metric. Compare modes within a cluster, not absolute scores across different metrics.
+
+- **Speed:** fastest mode mean time divided by the mode's mean time, multiplied by 100. AI Full sets the 100 benchmark at 38.1 seconds.
+- **Accuracy:** the recorded evaluation write-up reports 100% for every mode. This is a reported result, not a recalculation from CSV rows; the CSV has no per-run accuracy field.
+- **Efficiency:** fewest mode mean analyst steps divided by the mode's mean steps, multiplied by 100. AI No Tools sets the 100 benchmark at 3.0 steps. This measures step economy, not completeness of investigation.
+- **Context and action quality:** mean rubric score divided by 5, multiplied by 100.
+
+Indices use unrounded means and are displayed to at most one decimal place. AI Full leads on speed and both quality scores; AI No Tools leads on step economy, while reported accuracy is tied. Group sizes and scenario coverage differ, and one evaluator assigned quality scores.
 
 ### Preserved evaluation radar
 

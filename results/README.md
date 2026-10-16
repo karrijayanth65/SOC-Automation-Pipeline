@@ -1,10 +1,10 @@
-# Evaluation Results
+# Historical Evaluation Results
 
 [Home](../README.md) · [Raw CSV](evaluation-results.csv) · [Interactive dashboard](dashboard.html) · [Scenarios](../docs/attack-scenarios.md)
 
-This evaluation examines whether model assistance and intelligence enrichment make triage faster and give the analyst more useful context. Its 15 recorded runs let you compare time, action quality, context quality and analyst effort across three approaches.
+These 15 CSV rows are inherited historical observations. The supplied remediation guide reports a byte-for-byte match to Christopher Andrews's LARA source commit `41866043d4581ed85d4e921d26bb5e42625af299`; the comparison has not been independently repeated in this remediation. See [credits and lab context](../README.md#credits-and-lab-context).
 
-Start with the overall comparison, then inspect individual scenarios and raw rows. Download the repository and open `results/dashboard.html` to filter the records and explore the charts.
+No current execution packet links these rows to the revised workflow. The [dashboard](dashboard.html) computes descriptions of the retained historical rows; it is not a current benchmark.
 
 ## Method
 
@@ -22,7 +22,7 @@ Action and context quality use a five-point rubric:
 | 4 | Useful and specific | Good contextual explanation |
 | 5 | Specific and well-supported | Rich explanation with relevant validation |
 
-One evaluator assigned the recorded qualitative scores. Analyst steps count discrete actions in the triage workflow.
+The inherited write-up describes one evaluator assigning the qualitative scores; this remediation has not re-scored the underlying cases. Analyst steps count discrete actions in the triage workflow.
 
 ## Overall results
 
@@ -36,29 +36,17 @@ The values below are calculated from each mode's available CSV rows.
 | B: AI without tools | 3 | 130.0 s | 4.00 | 3.00 | 3.0 |
 | C: AI with enrichment | 7 | 38.1 s | 4.57 | 4.29 | 3.9 |
 
-Relative to the manual average, the recorded model-only time is 37.8% lower and the integrated time is 81.8% lower. These are descriptive comparisons across differently sized groups, not causal or production estimates.
+Relative to the manual average, the recorded model-only time is 37.8% lower and the integrated time is 81.8% lower. These are descriptive historical comparisons across differently sized groups. They do not validate the current export or establish causal or production improvements.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../screenshots/triage-comparison-dark.png">
-  <img src="../screenshots/triage-comparison.png" alt="Five-axis outline-only radar comparing AI Full, AI No Tools and Manual on higher-is-better indices">
-</picture>
+## Historical visuals
 
-### Radar chart scales
+The original images are preserved but removed from primary result displays because the CSV has no per-run accuracy field. Their accuracy dimension is unvalidated and must not be cited as a current or real-world result:
 
-The chart places zero at the center and 100 at the outer pentagon, with three rings at one-third, two-thirds and full scale. A higher index indicates better performance for that metric. Compare modes along an axis, not polygon areas or absolute scores across different metrics. Polygon interiors are unfilled.
+- [Original evaluation radar — historical, unvalidated](../screenshots/pipeline-comparison-radar.png)
+- [Light comparison radar — historical, unvalidated](../screenshots/triage-comparison.png)
+- [Dark comparison radar — historical, unvalidated](../screenshots/triage-comparison-dark.png)
 
-- **Speed:** fastest mode mean time divided by the mode's mean time, multiplied by 100. AI Full sets the 100 benchmark at 38.1 seconds.
-- **Accuracy:** the recorded evaluation write-up reports 100% for every mode on controlled, pre-validated scenarios. This is a reported result, not a recalculation from CSV rows; the CSV has no per-run accuracy field and cannot establish finer differences or real-world accuracy.
-- **Efficiency (step economy):** fewest mode mean analyst steps divided by the mode's mean steps, multiplied by 100. AI No Tools sets the 100 benchmark at 3.0 steps, but omits enrichment lookups. This measures effort, not completeness of investigation; fewer steps do not establish a better investigation.
-- **Context and action quality:** mean rubric score divided by 5, multiplied by 100.
-
-Indices use unrounded means and are displayed to at most one decimal place. AI Full leads on speed and both quality scores; AI No Tools leads on step economy, while reported accuracy is tied. Group sizes and scenario coverage differ, and one evaluator assigned quality scores.
-
-### Preserved evaluation radar
-
-![Recorded evaluation radar comparing the three configurations](../screenshots/pipeline-comparison-radar.png)
-
-This preserved graph uses the original evaluation's scales and includes its reported accuracy dimension; the CSV does not contain a per-run accuracy field. The interactive dashboard uses directly computable CSV metrics.
+The comparison radars mix normalized speed, quality and step-economy indices with an unsupported accuracy dimension. Fewer steps can mean omitted intelligence lookups. Do not compare polygon area as a measure of investigation quality. Asset origin gaps and hashes are recorded in the [manifest](../screenshots/manifest.csv).
 
 ## Results by scenario
 
@@ -73,7 +61,7 @@ This preserved graph uses the original evaluation's scales and includes its repo
 ## Reconciliation notes
 
 - The integrated group contains 27 analyst steps across seven runs: `27 / 7 = 3.857…`, displayed as 3.9. The earlier published prose reports 3.6; the raw rows are preserved and the dashboard computes 3.9.
-- Runs 1, 3, 6 and 7 have durations that differ from end minus start. The dashboard displays both values and flags those rows rather than substituting a guessed time.
+- Runs 1, 3, 6 and 7 have durations that differ from end minus start. The dashboard displays both values and flags those rows rather than substituting a guessed time. See the exact discrepancies below.
 - The historical statement of 100% classification accuracy is reported in the original write-up, but has no accuracy column in the CSV. It is not recomputed here.
 - Counts and quality scores describe a small controlled dataset with unequal scenario coverage, single-evaluator scoring and manually recorded times.
 
@@ -82,3 +70,14 @@ This preserved graph uses the original evaluation's scales and includes its repo
 Enrichment can supply indicator context that a model cannot obtain from an alert alone. Fewer analyst steps in mode B also reflect omitted lookups, so step count alone is not a complete measure of investigation quality.
 
 Retain the full raw records when interpreting a graph. For a new experiment, record execution IDs, event times, tool traces and downstream case/notification IDs using the [acceptance sequence](../docs/lab-environment.md#4-controlled-acceptance-test).
+
+## Timing discrepancies retained
+
+| Run | Recorded triage seconds | End minus start seconds | Difference (recorded minus timestamps) |
+|---|---|---|---|
+| 1 | 39 | 15 | +24 |
+| 3 | 41 | 15 | +26 |
+| 6 | 35.2 | 10 | +25.2 |
+| 7 | 30.6 | 7 | +23.6 |
+
+The measurement boundaries and cause of these differences are unknown. Neither time source has been silently corrected. A new balanced evaluation needs explicit start/end definitions, scenario coverage, execution IDs and independently reviewable case outcomes.

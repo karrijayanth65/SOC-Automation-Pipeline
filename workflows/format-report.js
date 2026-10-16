@@ -9,9 +9,61 @@ function slackText(value) {
   return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+function modelText(model) {
+  if (!model || typeof model !== 'object' || Array.isArray(model) ||
+      (model.status !== undefined && model.status !== 'completed') || model.error) {
+    throw new Error('Model response failed or incomplete');
+  }
+  if (!Array.isArray(model.output)) throw new Error('Missing model output');
+  const texts = [];
+  for (const item of model.output) {
+    if (!item || typeof item !== 'object') throw new Error('Invalid model output item');
+    if (item.type === 'refusal' || item.refusal ||
+        (item.status !== undefined && item.status !== 'completed')) throw new Error('Model refusal or incomplete item');
+    if (item.type && item.type !== 'message') {
+      if (item.type === 'reasoning') continue;
+      throw new Error('Unresolved model tool cycle or unsupported output item');
+    }
+    if (!Array.isArray(item.content)) throw new Error('Missing model content');
+    for (const part of item.content) {
+      if (!part || part.type === 'refusal' || part.refusal) throw new Error('Model refusal');
+      if (part.type && part.type !== 'output_text') throw new Error('Unsupported model content');
+      if (typeof part.text !== 'string') throw new Error('Missing model text');
+      texts.push(part.text);
+    }
+  }
+  if (texts.length !== 1 || !texts[0].trim() || texts[0].length > 24000) {
+    throw new Error('Expected exactly one bounded model report');
+  }
+  return texts[0];
+}
+
+function validateMitre(mappings) {
+  const catalog = typeof ATTACK_CATALOG !== 'undefined'
+    ? ATTACK_CATALOG : require('../data/attack-techniques.json');
+  if (!Array.isArray(mappings) || mappings.length > 2) throw new Error('Invalid MITRE mappings');
+  const seen = new Set();
+  return mappings.map(mapping => {
+    if (!mapping || typeof mapping !== 'object' || Array.isArray(mapping) ||
+        Object.keys(mapping).some(k => !['tactic', 'technique_id', 'technique_name'].includes(k))) {
+      throw new Error('Invalid MITRE fields');
+    }
+    requiredText(mapping.technique_name, 'technique_name', 120);
+    const tactic = requiredText(mapping.tactic, 'tactic', 80).toLowerCase().replace(/\s+/g, '-');
+    if (typeof mapping.technique_id !== 'string' || !/^T\d{4}(?:\.\d{3})?$/.test(mapping.technique_id)) {
+      throw new Error('Invalid technique ID');
+    }
+    const entry = Object.hasOwn(catalog, mapping.technique_id) ? catalog[mapping.technique_id] : null;
+    if (!entry || !entry.tactics.includes(tactic)) throw new Error('Unknown technique or tactic mismatch');
+    const identity = mapping.technique_id + ':' + tactic;
+    if (seen.has(identity)) throw new Error('Duplicate MITRE mapping');
+    seen.add(identity);
+    return {technique_id: mapping.technique_id, technique_name: entry.name, tactic};
+  });
+}
+
 function formatReport(model, alert) {
-  const text = model?.output?.[0]?.content?.[0]?.text;
-  if (typeof text !== 'string' || text.length > 24000) throw new Error('Missing or oversized model output');
+  const text = modelText(model);
   const report = JSON.parse(text);
   if (!report || typeof report !== 'object' || Array.isArray(report)) throw new Error('Expected report object');
   const required = ['title', 'summary', 'likelihood', 'impact_score', 'recommended_actions'];
@@ -58,18 +110,13 @@ function formatReport(model, alert) {
       const value = requiredText(ioc.value, 'IOC value', 512);
       const original = sourceIocs.find(i => i.type === type && i.value === value);
       if (!original) throw new Error('Model IOC is not in the source alert');
-      original.verdict = requiredText(ioc.verdict, 'IOC verdict', 500);
+      // Validate the supplied shape, but never promote model prose into provider evidence.
+      requiredText(ioc.verdict, 'IOC verdict', 500);
     }
   }
-  const mitre = report.mitre_attack ?? [];
-  if (!Array.isArray(mitre) || mitre.length > 2) throw new Error('Invalid MITRE mappings');
-  for (const mapping of mitre) {
-    if (!mapping || typeof mapping !== 'object' || Array.isArray(mapping) ||
-        Object.keys(mapping).some(k => !['tactic', 'technique_id', 'technique_name'].includes(k))) throw new Error('Invalid MITRE fields');
-    mapping.tactic = requiredText(mapping.tactic, 'tactic', 80);
-    mapping.technique_name = requiredText(mapping.technique_name, 'technique_name', 120);
-    if (typeof mapping.technique_id !== 'string' || !/^T\d{4}(?:\.\d{3})?$/.test(mapping.technique_id)) throw new Error('Invalid technique ID');
-  }
+  const mitre = validateMitre(report.mitre_attack ?? []);
+  report.mitre_attack = mitre;
+  report.iocs = sourceIocs;
   const detection = (body.search_name + ' ' + (source.attack_type || '')).toLowerCase();
   let detTag = 'det-other', classificationId = 36;
   if (/powershell/.test(detection)) {detTag = 'det-suspicious-powershell'; classificationId = 21;}
@@ -83,7 +130,7 @@ function formatReport(model, alert) {
     ...mitre.flatMap(m => ['mitre-' + m.technique_id, 'tactic-' + slug(m.tactic)])])].join(',');
   const indicators = sourceIocs.map(i => i.type + ': ' + i.value + ' — ' + i.verdict).join('\n');
   const mappings = mitre.map(m => m.technique_id + ' ' + m.technique_name + ' (' + m.tactic + ')').join('\n');
-  const note = `${report.summary}\n\nIndicators (model verdicts require review):\n` + indicators +
+  const note = `${report.summary}\n\nModel summary is advisory; provider reputation is unverified.\n\nIndicators (source observations only):\n` + indicators +
     (mappings ? '\n\nSuggested MITRE mappings:\n' + mappings : '') +
     '\n\nRecommendations (analyst review):\n' + report.recommended_actions.join('\n');
   return {
@@ -114,4 +161,4 @@ function formatReport(model, alert) {
   };
 }
 
-if (typeof module !== 'undefined') module.exports = {formatReport, slackText};
+if (typeof module !== 'undefined') module.exports = {formatReport, slackText, modelText, validateMitre};

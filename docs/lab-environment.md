@@ -2,9 +2,9 @@
 
 [Home](../README.md) · [Detections](../splunk/validated-inputs.md) · [Walkthrough](walkthrough.md)
 
-Use this guide to understand where each service runs, how an alert moves between services, and what must be configured to reproduce the handoff. The separation of endpoint, SIEM, orchestration and case-management roles also gives you clear places to investigate a delivery failure.
+The intended deployment is a single host. Installed Node.js, n8n, Splunk, DFIR-IRIS and model/provider versions, current runtime status and execution traces have not been supplied. Record them during controlled acceptance. This document combines historical layout context with configuration prerequisites; it is not evidence of a completed current deployment.
 
-## Recorded lab layout
+## Inherited historical lab layout
 
 | Machine | Recorded OS | Role | Address | RAM | Disk |
 |---|---|---|---|---|---|
@@ -14,7 +14,9 @@ Use this guide to understand where each service runs, how an alert moves between
 | DFIR-IRIS | Ubuntu 24.04 | Case management | 192.168.106.131 | 4 GB | 40 GB |
 | Kali | Rolling release | Authorized test traffic | 192.168.106.133 | 2 GB | 40 GB |
 
-![Recorded lab network topology](../screenshots/lab-network-topology.png)
+Historical layout illustration; per-file origin and capture date remain unknown. This diagram does not establish the current single-host configuration. See the [asset manifest](../screenshots/manifest.csv).
+
+[Preserved lab network topology](../screenshots/lab-network-topology.png)
 
 The listed allocations total 18 GB of guest RAM and 240 GB of virtual disk before host overhead. Size the physical machine for those allocations plus the host OS rather than treating a 16 GB host as sufficient for every guest at once.
 
@@ -82,12 +84,14 @@ The model is instructed to treat alert text as untrusted input. This reduces nei
 
 ## 4. Controlled acceptance test
 
+**Policy prerequisite:** the export escalates every successfully created IRIS alert before severity branching. The High/Critical check controls Slack only. An approved case-creation policy has not been supplied; resolve this before live acceptance. [Current implemented graph](current-workflow.md).
+
 1. Run `node --test tests/offline.test.cjs` locally.
 2. Verify one genuine Windows record is searchable in Splunk with correct host and event time.
 3. Send one approved low-volume alert to an n8n test URL and inspect the normalization output.
 4. Confirm a private IP causes no external IP lookup; separately inspect a permitted public-IP or hash lookup if authorized.
 5. Confirm model output passes validation and that IRIS receives the expected source SID, timestamp, customer, severity and advisory.
-6. Verify the created IRIS case ID and High/Critical Slack branch using reviewed test data.
+6. After resolving the case policy, verify expected case creation/review routing and Slack delivery with approved test data. Retain actual IDs and responses, including the low-severity path.
 7. Try malformed input, a tool timeout and an IRIS failure. Record actual behavior and ensure errors are visible before activation.
 
 The workflow acknowledges webhook receipt separately from end-to-end processing; a sender's HTTP success does not establish IRIS or Slack delivery. Inspect n8n execution status and downstream IDs.
@@ -97,3 +101,6 @@ The workflow acknowledges webhook receipt separately from end-to-end processing;
 Use least-privilege credentials, rate limits, bounded retention and reviewed execution logs. Configure a local error workflow/monitor before activation. Do not blindly retry case creation after a timeout: the source SID is carried into IRIS for traceability, but server-side duplicate suppression is not implemented here. Add a durable deduplication store and verify idempotency before unattended high-volume use.
 
 Model scores are advisory, not calibrated probabilities. Enrichment is requested through model tools and is not guaranteed on every eligible alert; inspect tool traces. No node disables an account, isolates a host or blocks an IP. Those actions remain analyst decisions.
+
+
+No current execution packet is available for this revision. Offline tests and CI validate fixture behavior only; version compatibility, live tool invocation and downstream delivery require the acceptance records above. The inherited images retain their original identities and are not current execution evidence. [Credits and lab context](../README.md#credits-and-lab-context).

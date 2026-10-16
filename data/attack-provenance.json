@@ -1,0 +1,10 @@
+{
+  "source_repository": "https://github.com/mitre-attack/attack-stix-data",
+  "source_commit": "c2494b29dd268c46a5d0ea0990553e4327cd2253",
+  "source_url": "https://raw.githubusercontent.com/mitre-attack/attack-stix-data/c2494b29dd268c46a5d0ea0990553e4327cd2253/enterprise-attack/enterprise-attack.json",
+  "retrieved_date": "2026-10-16",
+  "upstream_sha256": "81113ba98afa2928f3dcff62022539f7ce30c315c32e14422f11ff95ce534352",
+  "vendored_sha256": "b10734bd661f876be8339d1dd04695f78b2ad923cabaa9ccfec58b8c99e81b65",
+  "transformation": "Only attack-pattern objects retained; only semantic validation fields retained. Revoked and deprecated objects retained for exclusion. This is a derived subset, not the complete STIX bundle.",
+  "license": "ATTACK-LICENSE.txt"
+}

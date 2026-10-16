@@ -1,0 +1,17 @@
+{
+  "name": "soc-automation-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Offline validation for a lab SOC automation workflow",
+  "engines": {"node": ">=24 <25"},
+  "scripts": {
+    "test": "node --test",
+    "generate:workflow": "node scripts/generate-workflow.cjs",
+    "generate:dashboard": "node scripts/generate-dashboard-data.cjs",
+    "check:attack": "node scripts/generate-attack-catalog.cjs --check",
+    "check:workflow": "node scripts/generate-workflow.cjs --check",
+    "check:dashboard": "node scripts/generate-dashboard-data.cjs --check",
+    "check:links": "node scripts/check-links.cjs",
+    "check": "node scripts/check.cjs"
+  }
+}

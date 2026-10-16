@@ -1,33 +1,31 @@
-# From Alert to Analyst Handoff
+# Historical Capture Walkthrough
 
-[Home](../README.md) · [Setup](lab-environment.md) · [Detections](../splunk/validated-inputs.md)
+[Home](../README.md) · [Current flow](current-workflow.md) · [Setup](lab-environment.md) · [Asset manifest](../screenshots/manifest.csv)
 
-Follow the alert from orchestration to the case and analyst notification. The purpose of the handoff is to deliver the source event, relevant context and next review steps together, so the analyst can continue the investigation without reconstructing the alert from several tools.
+These preserved captures are historical observations identified by the supplied remediation guide. They are not evidence that the revised workflow executed. Capture dates, producing execution IDs and previous redactions are unknown. Original images and identities are retained.
 
-## Workflow canvas
+## Historical workflow canvas
 
-![n8n workflow canvas](../screenshots/workflow-canvas.png)
+![Historical n8n workflow canvas; not the current export](../screenshots/workflow-canvas.png)
 
-Five alert types converge on a shared analysis path. The current export adds normalization ahead of model analysis and validates the report before downstream requests.
+The capture shows `Set link`; the current export uses `Normalize alert`. Use the [current graph](current-workflow.md) and [export](../workflows/pipeline-c.json) to inspect implemented behavior. A replacement capture requires the actual current inactive/configured canvas, plus a separately recorded execution when available.
 
-## Case handoff
+## Historical case handoff
 
-![DFIR-IRIS case view](../screenshots/dfir-iris-case.png)
+![Historical DFIR-IRIS case; not a current execution](../screenshots/dfir-iris-case.png)
 
-The case keeps the alert and its interpretation in one investigation record. The formatter carries the original source SID and event timestamp into the payload, making it possible to check the summary against the source event and track the handoff.
+The guide identifies historical `Chris-Project` identities. They must not be relabeled as a new run. The current formatter prepares a source SID and timestamp, but a payload fixture cannot establish that IRIS accepted it or created native assets/IOCs.
 
-## Analyst notification
+## Historical analyst notification
 
-![Slack alert detail](../screenshots/slack-notification.png)
+![Historical Slack message; formatting is not a current behavior contract](../screenshots/slack-notification.png)
 
-The High/Critical branch brings higher-priority cases to the analyst after escalation. Lower scores still reach IRIS but do not take that Slack branch. The message supplies context and recommended review steps; the analyst chooses the response.
+The guide identifies formatted sections and clickable Splunk/IRIS links absent from the current formatter. This image is preserved as history. The current graph checks severity only after IRIS case escalation; High/Critical controls the Slack branch, while lower scores have already reached escalation. An approved case policy remains outstanding.
 
-## A reproducible local check
+## Current evidence required
 
-The [example alert](../tests/example-alert.json) exercises normalization with a private client IP, a dedicated lab identity and a timezone-qualified event time. The tests supply a fixed model response to make the formatter deterministic, then verify the resulting severity and IRIS fields. Read the code in [normalize-alert.js](../workflows/normalize-alert.js) and [format-report.js](../workflows/format-report.js) alongside their embedded n8n nodes.
+Run the local checks using `node --test tests/offline.test.cjs`. These use fixtures and establish offline behavior only.
 
-```bash
-node --test tests/offline.test.cjs
-```
+A current execution packet must include the source event and SID, normalized alert, workflow revision and n8n execution ID, sanitized provider/tool response, IRIS alert/case IDs, Slack delivery outcome, exact component versions and timestamps. Include an error/failure trace as well as a successful path. No such packet has been supplied for this revision.
 
-To review a real integration, retain the Splunk SID, n8n execution ID, tool results, IRIS alert/case IDs and downstream delivery status. Those identifiers let you trace one alert across the entire handoff without inferring success from a screenshot alone.
+Store fresh captures separately. If a sensitive value must be hidden, retain the private original, record the redacted field and publish a sanitized derivative with its own hash. Do not change identities, timestamps or status results to imply an execution occurred.

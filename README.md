@@ -1,256 +1,89 @@
 # SOC Automation Pipeline
 
-Evaluating how AI and threat intelligence change the speed and usefulness of SOC triage.
+A lab workflow connecting `Splunk → n8n → model tools → DFIR-IRIS → Slack`.
 
-`Splunk → n8n → GPT-4.1 Mini + AbuseIPDB / VirusTotal → DFIR-IRIS → Slack`
+This repository contains a revised workflow export, readable JavaScript, offline regression tests and an inherited historical evaluation. **No current end-to-end execution packet has been supplied for this revision.** Installed service versions and live integration behavior remain unverified.
 
-An analyst investigating an alert has to connect log evidence, indicator reputation, severity and recommended next steps. Repeating those lookups and copying context between tools takes time.
+[Credits and lab context](#credits-and-lab-context) · [Current workflow](docs/current-workflow.md) · [Setup](docs/lab-environment.md) · [Detections](splunk/validated-inputs.md) · [Historical results](results/README.md) · [Asset manifest](screenshots/manifest.csv)
 
-This lab brings that work into one pipeline and compares three ways to perform it: manual investigation, model-assisted analysis, and model analysis with threat intelligence enrichment. Five scenarios and 15 recorded runs show the trade-offs in triage time, context quality and analyst effort.
+## Current implementation and limits
 
-[Setup](docs/lab-environment.md) · [Detection rules](splunk/detection-rules.md) · [Scenarios](docs/attack-scenarios.md) · [Results](results/README.md) · [Dashboard](results/dashboard.html) · [Prompts and code](docs/prompts-and-code.md)
-
-## What makes this project useful
-
-The project connects an operational workflow to a measurable comparison. Readers can inspect both the handoff between tools and the records behind the results.
-
-| Added value | What you can inspect |
-|---|---|
-| A comparison that separates model assistance from enrichment | Manual, model-only and integrated results, with raw rows and scoring definitions |
-| Context carried into the investigation | Source events, indicator lookups, structured summaries, case tags and analyst notifications |
-| Checks around automated handoffs | Authenticated webhooks, source-bound indicators, schema validation and 67 offline tests |
-| A path from explanation to reproduction | Architecture, five SPL detections, configuration notes, readable code and an interactive results dashboard |
-
-## Results at a glance
-
-In the recorded lab data, integrated triage averaged **38.1 seconds versus 209 seconds manually**, a reduction of approximately **82%**. Its mean context score was **4.29/5**, compared with **3.60/5** manually and **3.00/5** for model-only analysis.
-
-That combination matters: a useful handoff needs investigation context as well as a short turnaround. The groups have different scenario coverage and run counts, which are retained below and explained in the [evaluation method](results/README.md#method).
-
-| Metric | A: Manual | B: AI without tools | C: AI with enrichment |
-|---|---|---|---|
-| Runs | 5 | 3 | 7 |
-| Average triage time | 209.0 s | 130.0 s | 38.1 s |
-| Time reduction vs manual | — | 37.8% | 81.8% |
-| Action quality / 5 | 3.00 | 4.00 | 4.57 |
-| Context quality / 5 | 3.60 | 3.00 | 4.29 |
-| Average analyst steps | 6.6 | 3.0 | 3.9 |
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="screenshots/triage-comparison-dark.png">
-  <img src="screenshots/triage-comparison.png" alt="Outline-only radar comparing AI Full, AI No Tools and Manual across speed, action quality, context quality, efficiency and reported accuracy">
-</picture>
-
-[Explore the records and calculations](results/README.md) · [Use the interactive dashboard](results/dashboard.html).
-
-The radar uses a higher-is-better 0–100 index, with [formulas and source distinctions](results/README.md#radar-chart-scales) documented alongside the original radar. Efficiency means step economy: AI No Tools uses fewer steps because it omits enrichment, not because its investigation is more complete. All modes were reported at 100% accuracy on pre-validated lab scenarios; this is not recomputed from the CSV or evidence of real-world accuracy.
-
-## How the pipeline works
-
-![Six-stage SOC automation pipeline: receive, normalize, analyze and enrich, validate, create case and notify analyst](screenshots/pipeline-canva.png)
-
-Authenticated intake, source normalization and output validation keep the original alert traceable through model analysis and the case handoff.
-
-### What each stage contributes
-
-| Capability | Implementation |
-|---|---|
-| Five alert inputs | Authentication, hash, scanning, account change and PowerShell webhooks |
-| Intelligence enrichment | AbuseIPDB IP reputation; VirusTotal IP and SHA-256 lookups |
-| Structured triage | Validated summary, scores, recommendations, source-bound indicators and MITRE suggestions |
-| Case management | IRIS alert creation followed by case escalation |
-| Investigation context | Original SID/time, indicator detail, detection tags and classification defaults |
-| Analyst notification | Formatted Slack output for the High/Critical branch |
-| Evaluation | Raw 15-run CSV, methodology, radar, interactive charts and comparison tables |
-| Reproducibility | Configuration inventory, readable node code and offline tests |
-
-## Follow an alert from detection to handoff
-
-These views connect the architecture to the information an analyst receives: one workflow, one notification, a case record and a queue for prioritizing investigations.
-
-### n8n workflow
-
-![n8n workflow canvas](screenshots/workflow-canvas.png)
-
-Five input routes converge on model analysis, tool enrichment and downstream handoff. The current export also includes the shared normalization node.
-
-### Slack notification
-
-![Slack notification with severity, summary and investigation detail](screenshots/slack-notification.png)
-
-The analyst receives a concise summary and investigation context. The export sends this branch after IRIS escalation for High/Critical scores.
-
-### DFIR-IRIS case
-
-![DFIR-IRIS case showing severity, tags and description](screenshots/dfir-iris-case.png)
-
-The alert payload preserves the original source SID, event time, report and indicator context.
-
-### DFIR-IRIS queue
-
-![DFIR-IRIS open-case queue](screenshots/dfir-iris-cases-list.png)
-
-The queue groups investigations with severity, source and indicator tags.
-
-## Lab environment
-
-Five virtual machines separate the endpoint, detection, orchestration, case management and test roles. This makes the path from a Windows event to an analyst-facing case easier to follow and troubleshoot.
-
-| Machine | Recorded OS | Role | Address |
-|---|---|---|---|
-| Windows client | Windows 10 Pro | Endpoint telemetry and test target | 192.168.106.128 |
-| Splunk | Ubuntu 24.04 | Search and alerts | 192.168.106.129 |
-| n8n | Ubuntu 24.04 | Orchestration and model tools | 192.168.106.130 |
-| DFIR-IRIS | Ubuntu 24.04 | Case management | 192.168.106.131 |
-| Kali Linux | Rolling release | Authorized scenario traffic | 192.168.106.133 |
-
-![VMware lab overview](screenshots/vmware-lab-overview.png)
-
-![VMware host-only and NAT network configuration](screenshots/vmware-network-config.png)
-
-![Lab network topology](screenshots/lab-network-topology.png)
-
-The private lab segment contains scenario traffic. Model, intelligence and messaging APIs require controlled egress. [Lab setup and communication paths](docs/lab-environment.md).
-
-### Investigation lifecycle
-
-![Investigation lifecycle from alert to case closure](screenshots/incident-response-workflow.png)
-
-The handoff supports a wider investigation: the analyst reviews evidence, chooses response actions and records closure.
-
-### Component architecture
-
-![Component architecture showing telemetry, SIEM, orchestration, model tools, IRIS and Slack](screenshots/architecture-diagram.png)
-
-## Three pipeline configurations
-
-**A — Manual:** review Splunk, look up indicators, assess the alert and document the investigation manually.
-
-**B — AI without tools:** use model analysis without the three enrichment tools. Prepare a separate workflow copy, disconnect the tool connections and adjust the prompt. Inspect traces to confirm no tool calls occurred.
-
-**C — Integrated:** use the supplied [pipeline-c.json](workflows/pipeline-c.json), bind credentials and review the field contract before activation.
-
-The recorded model-only group covers three scenarios; manual and integrated groups cover all five. The [evaluation coverage table](docs/attack-scenarios.md#recorded-evaluation-coverage) gives the actual run counts.
-
-## Attack scenarios
-
-The scenarios exercise different investigation needs: account context, executable reputation, network activity, privilege changes and command-line intent. Together they show where external intelligence can add context and where local event evidence remains central.
-
-| Scenario | Detection telemetry | Input route |
+| Area | What the repository implements | What remains unverified or incomplete |
 |---|---|---|
-| Authentication failures | Windows Security 4625 | IP |
-| Process hash review | Sysmon process creation with SHA-256 | Hash |
-| Network service discovery | Windows Firewall drops and ports | Scan |
-| Account creation / group change | Windows Security 4720 / 4732 | Admin |
-| PowerShell command-line review | Sysmon image, command and parent process | PowerShell |
+| Intake | Five authenticated webhook routes and shared normalization | Actual Splunk sender configuration and authenticated delivery |
+| Model analysis | Structured report validation and source-bound indicator tools | Live response envelopes, model/provider versions and tool traces |
+| Enrichment | AbuseIPDB and VirusTotal tools attached to the model node | Tool invocation is model-selected; deterministic enrichment and coverage are incomplete |
+| Case handoff | IRIS alert creation, followed by case escalation | Deployment-specific API fields/IDs, native entities and durable delivery |
+| Notification | High/Critical Slack branch after case escalation | Current delivered message and approved escalation policy |
+| Validation | Offline tests for code, contracts and workflow structure | Live acceptance, failure recovery and restart evidence |
 
-[Scenario details](docs/attack-scenarios.md) · [Recorded SPL queries](splunk/detection-rules.md) · [Validated deployment examples](splunk/validated-inputs.md).
+The graph currently escalates **every successfully created IRIS alert before checking severity**. The severity branch controls Slack delivery only. This is existing behavior, and the case policy still requires an explicit decision before activation. No node performs containment, investigation completion or case closure.
 
-### Splunk saved alerts
+The current graph is documented in [current-workflow.md](docs/current-workflow.md). Older diagrams and interface captures are retained as historical or unverified-origin assets; they do not prove the current export ran successfully.
 
-![Five saved Splunk alerts](screenshots/splunk-alerts.png)
+## Setup and offline checks
 
-### Authentication search
+The intended deployment is a **single host**. The inherited multi-VM layout is background material, not a verified description of the current host. Exact Node.js, n8n, Splunk, DFIR-IRIS and model/provider versions must be recorded during acceptance.
 
-![Splunk authentication-failure query and grouped result](screenshots/splunk-brute-force-detection.png)
-
-### Account-change search
-
-![Splunk account creation and membership query](screenshots/splunk-admin-detection.png)
-
-### Endpoint telemetry
-
-![Sysmon process-creation events in Windows Event Viewer](screenshots/sysmon-event-viewer.png)
-
-## What the comparison tells an analyst
-
-Model-only analysis reduced the recorded mean triage time from 209 to 130 seconds, but its mean context score was lower than manual review. The integrated records combine the shortest mean time with the highest context score. This supports examining the entire handoff: the data available to the analyst, the lookups performed and the quality of the resulting case.
-
-Fewer steps also need interpretation. Model-only runs omit intelligence lookups, so a smaller step count can reflect work that was skipped. Speed, context and effort should be read together.
-
-The experiment has unequal scenario coverage, few repetitions, manual timing and single-evaluator quality scores. Treat its averages as a description of those records. [Methodology, scoring and limitations](results/README.md).
-
-## Setup and validation
-
-1. Prepare the lab services and telemetry sources using [lab-environment.md](docs/lab-environment.md).
-2. Copy [env.example](env.example) to a private configuration file and bind credentials in n8n.
-3. Run the local suite, import the workflow inactive and configure trusted URLs, IDs and the Slack channel.
-4. Follow the controlled acceptance sequence and trace one alert across the services.
+1. Review [lab-environment.md](docs/lab-environment.md) and the [detection field contract](splunk/validated-inputs.md).
+2. Bind credentials in n8n, verify trusted URLs and IRIS IDs, and import [pipeline-c.json](workflows/pipeline-c.json) inactive.
+3. Run the regression suite:
 
 ```bash
-node --test tests/offline.test.cjs
+node scripts/check.cjs
 ```
 
-The offline suite covers parsing, indicators, score boundaries, payloads, workflow connections and embedded-code consistency. Read [prompts-and-code.md](docs/prompts-and-code.md) for the exact current prompt and readable node sources.
+4. Resolve the case policy and retain a controlled execution packet before activation.
 
-For the interactive charts, download the complete repository and open `results/dashboard.html`. The dashboard has no external scripts, keys or network dependencies. [docs/overview.html](docs/overview.html) provides a separate static architecture and deployment overview.
+The check command needs Node.js 24 and no npm install or external dependencies. It runs the full suite, catalog/hash checks, generated-code/data checks and local link checks. See [remediation status](RESUBMISSION.md), [engineering plan](Engineering_Action_Plan.md) and [rollback instructions](ROLLBACK.md).
 
-## Alternative deployments
+Offline tests and CI exercise fixtures and static workflow contracts. They do not contact Splunk, the model provider, threat intelligence APIs, IRIS or Slack, and cannot establish live delivery or response effectiveness. Consult the test output and CI run for the actual result and runtime; this README does not advertise a fixed test count.
 
-| Layer | Alternatives discussed in the original study | Adaptation needed |
-|---|---|---|
-| SIEM | Wazuh, Elastic, Security Onion, Sentinel | Field mapping, detection language and alert delivery |
-| Model | Ollama with a local model, other hosted providers | Model-node adapter, tool use and schema validation |
-| Orchestration | Shuffle, StackStorm, other SOAR platforms | Rebuild workflow, credential binding and API handoff |
+## Quick remediation scope
 
-These are porting options; the included export targets n8n and the documented services.
+Normalizer and formatter hardening is covered by offline regression checks. The formatter checks completed typed provider messages, rejects refusals and unresolved tool cycles, keeps model reputation text separate from source observations, and validates ATT&CK IDs/tactics against a pinned catalog. These code changes do not resolve deterministic enrichment, delivery recovery, deployment-specific IRIS entities or case-policy ordering.
 
-## Repository structure
+## Historical evaluation
 
-The folders follow the investigation journey: understand the setup in `docs/`, inspect detections in `splunk/`, follow execution in `workflows/`, and review outcomes in `results/`. Screenshots show the recorded interface views; tests cover the deployment code.
+The preserved [15-row CSV](results/evaluation-results.csv) has 5 manual, 3 model-only and 7 integrated records. Its recorded mean times are 209.0, 130.0 and 38.1 seconds respectively. **81.8%** is a descriptive difference between the inherited integrated and manual means, with unequal coverage; it is not a measured improvement for this revision.
 
-```text
-SOC-Automation-Pipeline/
-├── .gitattributes
-├── .gitignore
-├── .markdownlint.json
-├── README.md
-├── LICENSE
-├── env.example
-├── docs/
-│   ├── attack-scenarios.md
-│   ├── lab-environment.md
-│   ├── prompts-and-code.md
-│   ├── walkthrough.md
-│   └── overview.html
-├── results/
-│   ├── README.md
-│   ├── evaluation-results.csv
-│   ├── dashboard.html
-│   └── dashboard.js
-├── screenshots/
-│   ├── pipeline.svg
-│   ├── pipeline-canva.png
-│   ├── architecture-diagram.png
-│   ├── incident-response-workflow.png
-│   ├── pipeline-comparison-radar.png
-│   ├── triage-comparison.png
-│   ├── triage-comparison-dark.png
-│   ├── workflow-canvas.png
-│   ├── slack-notification.png
-│   ├── dfir-iris-case.png
-│   ├── dfir-iris-cases-list.png
-│   ├── splunk-alerts.png
-│   ├── splunk-brute-force-detection.png
-│   ├── splunk-admin-detection.png
-│   ├── sysmon-event-viewer.png
-│   ├── lab-network-topology.png
-│   ├── vmware-lab-overview.png
-│   └── vmware-network-config.png
-├── splunk/
-│   ├── detection-rules.md
-│   └── validated-inputs.md
-├── workflows/
-│   ├── pipeline-c.json
-│   ├── normalize-alert.js
-│   └── format-report.js
-└── tests/
-    ├── example-alert.json
-    └── offline.test.cjs
-```
+Runs 1, 3, 6 and 7 have timing discrepancies between `triage_time_s` and their start/end fields. The CSV has no per-run accuracy field. Original accuracy-bearing radar images remain linked only as [historical, unvalidated material](results/README.md#historical-visuals). No current accuracy claim is made.
 
-## Technology stack
+[Method, calculations and limitations](results/README.md) · [Historical-data dashboard](results/dashboard.html)
 
-`Splunk` · `n8n` · `OpenAI` · `AbuseIPDB` · `VirusTotal` · `DFIR-IRIS` · `Slack` · `VMware` · `Windows` · `Sysmon` · `JavaScript` · `HTML/CSS`
+## Evidence and assets
+
+[screenshots/manifest.csv](screenshots/manifest.csv) records all retained assets, local SHA-256 hashes and known provenance gaps. Original images are preserved. Unknown capture dates, execution IDs and previous redactions remain explicitly unknown.
+
+The [historical walkthrough](docs/walkthrough.md) explains known differences between captures and code. A current evidence packet must link the source record and SID to the n8n execution, normalized alert, provider/tool results, IRIS IDs and Slack delivery outcome. Publish a separate sanitized copy when redaction is needed and record the exact redacted fields; retain the original privately. Never edit an image to imply a different execution or result.
+
+## Credits and lab context
+
+This project builds on Christopher Andrews's [LARA SOC Automation](https://github.com/C-Andr3ws/lara-soc-automation), source commit [`41866043d4581ed85d4e921d26bb5e42625af299`](https://github.com/C-Andr3ws/lara-soc-automation/tree/41866043d4581ed85d4e921d26bb5e42625af299). Preserve the existing [license and copyright notices](LICENSE).
+
+The supplied *GitHub Project Remediation and Resubmission Guide*, auditing `0f46773d53f53a3de78b937b56fb317c3977b317`, reports that the evaluation CSV and 14 screenshot/diagram files match that upstream snapshot byte for byte. That count is the guide's finding; this remediation has not independently mapped all 14 asset matches. The manifest distinguishes reported inheritance from unknown per-asset origin.
+
+| Material or contribution | Evidence-backed attribution and limits |
+|---|---|
+| Evaluation CSV and historical study results | Upstream inheritance reported by the supplied guide; current executions are not established |
+| Historical workflow, Slack and IRIS captures | Identified by the guide as inherited/historical; preserve original identities |
+| Other retained diagrams and images | Per-file authorship is unknown unless separately evidenced; see manifest |
+| Workflow/code lineage | This repository derives from the named upstream project; individual authorship must be established from commits, not assumed |
+| Current normalization, formatter, tests, documentation and dashboard | Present in this repository; their presence alone does not establish a person's authorship or live lab participation |
+| This remediation | AI-assisted code and documentation edits, reviewable in the remediation commit; offline validation is separate from live execution |
+| Claimed shared lab participation | Unverified: exact personal tasks, dates and execution artifacts have not been supplied |
+
+Reuse is documented. The available evidence does not establish fabrication, theft or sole authorship. Historical lab results cannot validate the revised export.
+
+## Repository map
+
+| Path | Purpose |
+|---|---|
+| `workflows/` | Inactive n8n export and readable JavaScript |
+| `tests/` | Offline fixtures and regression checks |
+| `splunk/` | Detection queries and input contract |
+| `docs/` | Current flow, setup and historical walkthrough |
+| `results/` | Preserved historical CSV and descriptive dashboard |
+| `screenshots/` | Preserved originals and provenance manifest |
 
 Documentation updated 16 October 2026.

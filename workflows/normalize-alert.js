@@ -34,15 +34,47 @@ function publicIPv4(value) {
   return value;
 }
 
+function identityText(value, key) {
+  if (typeof value !== 'string') throw new Error('Invalid scalar identity: ' + key);
+  const text = value.trim();
+  if (!text || text.length > 255 || /[\r\n\0]/.test(text)) throw new Error('Invalid identity: ' + key);
+  return text;
+}
+
+function integerField(value, key) {
+  // Splunk webhook numeric fields may be decimal strings. Do not coerce booleans,
+  // arrays, fractions, exponent notation or numbers outside JavaScript's exact range.
+  const number = typeof value === 'string' && /^(?:0|[1-9]\d*)$/.test(value) ? Number(value) : value;
+  if (typeof number !== 'number' || !Number.isSafeInteger(number) || number < 0) {
+    throw new Error('Invalid nonnegative safe integer: ' + key);
+  }
+  return number;
+}
+
+function normalizeAliases(result, keys, required) {
+  const present = keys.filter(key => result[key] !== undefined);
+  if (!present.length) {
+    if (required) throw new Error('Missing source host');
+    return;
+  }
+  for (const key of present) result[key] = identityText(result[key], key);
+  const value = result[present[0]];
+  // Do not infer equivalence between short names, FQDNs or qualified accounts.
+  // Senders must select one source identity before aggregating events.
+  if (present.some(key => result[key] !== value)) throw new Error('Conflicting identity aliases: ' + keys.join(', '));
+  result[keys[0]] = value;
+}
+
 function normalizeAlert(input) {
   const body = input?.body;
   if (!body || typeof body !== 'object' || Array.isArray(body) ||
       !body.result || typeof body.result !== 'object' || Array.isArray(body.result)) {
     throw new Error('Expected a Splunk webhook body.result object');
   }
-  const fields = ['host', 'ComputerName', 'Computer', 'user', 'target_account', 'initiating_user',
+  const fields = ['host', 'ComputerName', 'Computer', 'user', 'User', 'target_account', 'initiating_user',
     'src_ip', 'dst_ip', 'count', 'drops', 'ports', 'attack_type', 'mitre_technique',
-    'Image', 'CommandLine', 'ParentImage', 'flags', 'sha256', '_time', 'Raw_Splunk_time'];
+    'Image', 'CommandLine', 'ParentImage', 'ParentCommandLine', 'flags', 'sha256', '_time', 'Raw_Splunk_time',
+    'actions', 'hits', 'EventCode', 'EventID', 'TargetSid', 'MemberSid'];
   const result = {};
   for (const key of fields) {
     const value = body.result[key];
@@ -55,11 +87,31 @@ function normalizeAlert(input) {
     if (JSON.stringify(value).length > 12000) throw new Error('Oversized field: ' + key);
     result[key] = value;
   }
-  const hostValue = result.host || result.ComputerName || result.Computer;
-  if (typeof hostValue !== 'string') throw new Error('Invalid source host type');
-  const host = hostValue.trim();
-  if (!host || host.length > 255 || /[\r\n]/.test(host)) throw new Error('Missing or invalid source host');
-  result.host = host;
+  normalizeAliases(result, ['host', 'ComputerName', 'Computer'], true);
+  normalizeAliases(result, ['user', 'User'], false);
+  for (const key of ['target_account', 'initiating_user', 'TargetSid', 'MemberSid']) {
+    if (result[key] !== undefined) result[key] = identityText(result[key], key);
+  }
+  for (const key of ['TargetSid', 'MemberSid']) {
+    if (result[key] !== undefined && !/^S-\d+(?:-\d+)+$/.test(result[key])) throw new Error('Invalid Windows SID: ' + key);
+  }
+  for (const key of ['hits', 'EventCode', 'EventID']) {
+    if (result[key] !== undefined) result[key] = integerField(result[key], key);
+  }
+  if (result.EventCode !== undefined && result.EventID !== undefined && result.EventCode !== result.EventID) {
+    throw new Error('Conflicting event ID aliases');
+  }
+  if (result.ParentCommandLine !== undefined && typeof result.ParentCommandLine !== 'string') {
+    throw new Error('Invalid ParentCommandLine type');
+  }
+  if (result.actions !== undefined) {
+    const actions = Array.isArray(result.actions) ? result.actions : [result.actions];
+    if (actions.length < 1 || actions.length > 20) throw new Error('Invalid actions count');
+    result.actions = actions.map(value => {
+      if (typeof value !== 'string' || !value.trim() || value.trim().length > 300) throw new Error('Invalid action');
+      return value.trim();
+    });
+  }
   result.event_time = eventTime(result.Raw_Splunk_time ?? result._time);
   result.public_ip = publicIPv4(result.src_ip);
   if (result.sha256 !== undefined && (typeof result.sha256 !== 'string' || !/^[a-f0-9]{64}$/i.test(result.sha256))) {

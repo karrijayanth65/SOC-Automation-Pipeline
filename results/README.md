@@ -36,7 +36,7 @@ Relative to the manual average, the recorded model-only time is 37.8% lower and 
 
 ![Recorded evaluation radar comparing the three configurations](../screenshots/pipeline-comparison-radar.png)
 
-[Open full-size radar](../screenshots/pipeline-comparison-radar.png). This preserved graph uses the original evaluation's scales and includes its reported accuracy dimension; the CSV does not contain a per-run accuracy field. The interactive dashboard uses directly computable CSV metrics.
+This preserved graph uses the original evaluation's scales and includes its reported accuracy dimension; the CSV does not contain a per-run accuracy field. The interactive dashboard uses directly computable CSV metrics.
 
 ## Results by scenario
 

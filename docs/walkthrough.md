@@ -6,19 +6,19 @@
 
 ![n8n workflow canvas](../screenshots/workflow-canvas.png)
 
-Five alert types converge on a shared analysis path. The current export adds normalization ahead of model analysis and validates the report before downstream requests. [View full-size canvas](../screenshots/workflow-canvas.png).
+Five alert types converge on a shared analysis path. The current export adds normalization ahead of model analysis and validates the report before downstream requests.
 
 ## Case handoff
 
 ![DFIR-IRIS case view](../screenshots/dfir-iris-case.png)
 
-IRIS provides a place to retain the original alert and analyst-facing summary. The formatter carries the original source SID and event timestamp into its alert payload and tags the model advisory for review. [View full-size case](../screenshots/dfir-iris-case.png).
+IRIS provides a place to retain the original alert and analyst-facing summary. The formatter carries the original source SID and event timestamp into its alert payload and tags the model advisory for review.
 
 ## Analyst notification
 
 ![Slack alert detail](../screenshots/slack-notification.png)
 
-The High/Critical branch sends a concise Slack message after case escalation. Lower scores still reach IRIS but do not take that Slack branch. Model recommendations are text for analyst review, not executed response commands. [View full-size notification](../screenshots/slack-notification.png).
+The High/Critical branch sends a concise Slack message after case escalation. Lower scores still reach IRIS but do not take that Slack branch. Model recommendations are text for analyst review, not executed response commands.
 
 ## A reproducible local check
 

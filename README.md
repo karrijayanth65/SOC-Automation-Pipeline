@@ -12,20 +12,17 @@ A five-machine lab connects Windows events and Sysmon telemetry to structured tr
 
 ![Six-stage alert-to-case architecture](screenshots/pipeline.svg)
 
-[Open full-size architecture](screenshots/pipeline.svg). Authenticated intake, source normalization and output validation keep the original alert traceable through model analysis and the case handoff.
+Authenticated intake, source normalization and output validation keep the original alert traceable through model analysis and the case handoff.
 
-<details>
-<summary>Investigation lifecycle and component diagram</summary>
+### Investigation lifecycle
 
 ![Investigation lifecycle from alert to case closure](screenshots/incident-response-workflow.png)
 
 The lifecycle includes analyst-led evidence collection, response decisions and closure. Response recommendations in the workflow require analyst action.
 
+### Component architecture
+
 ![Component architecture showing telemetry, SIEM, orchestration, model tools, IRIS and Slack](screenshots/architecture-diagram.png)
-
-[Full-size component diagram](screenshots/architecture-diagram.png).
-
-</details>
 
 ## What the pipeline includes
 
@@ -55,7 +52,7 @@ The 15-run dataset compares three configurations. Averages below are calculated 
 
 ![Recorded radar comparing speed, action quality, context quality, efficiency and reported accuracy](screenshots/pipeline-comparison-radar.png)
 
-[Full-size radar](screenshots/pipeline-comparison-radar.png) · [Raw records and reconciliation](results/README.md) · [Interactive analysis](results/dashboard.html).
+[Raw records and reconciliation](results/README.md) · [Interactive analysis](results/dashboard.html).
 
 The preserved radar uses the recorded evaluation's original scales. The CSV supports the time, quality and step calculations; accuracy has no per-run column. The results page explains the difference between the earlier prose's 3.6 integrated steps and the CSV mean of 3.9, plus four timing mismatches.
 
@@ -65,25 +62,25 @@ The preserved radar uses the recorded evaluation's original scales. The CSV supp
 
 ![n8n workflow canvas](screenshots/workflow-canvas.png)
 
-Five input routes converge on model analysis, tool enrichment and downstream handoff. The current export also includes the shared normalization node. [Full-size canvas](screenshots/workflow-canvas.png).
+Five input routes converge on model analysis, tool enrichment and downstream handoff. The current export also includes the shared normalization node.
 
 ### Slack notification
 
 ![Slack notification with severity, summary and investigation detail](screenshots/slack-notification.png)
 
-The analyst receives a concise summary and investigation context. The export sends this branch after IRIS escalation for High/Critical scores. [Full-size Slack capture](screenshots/slack-notification.png).
+The analyst receives a concise summary and investigation context. The export sends this branch after IRIS escalation for High/Critical scores.
 
 ### DFIR-IRIS case
 
 ![DFIR-IRIS case showing severity, tags and description](screenshots/dfir-iris-case.png)
 
-The alert payload preserves the original source SID, event time, report and indicator context. [Full-size case](screenshots/dfir-iris-case.png).
+The alert payload preserves the original source SID, event time, report and indicator context.
 
 ### DFIR-IRIS queue
 
 ![DFIR-IRIS open-case queue](screenshots/dfir-iris-cases-list.png)
 
-The queue groups investigations with severity, source and indicator tags. [Full-size queue](screenshots/dfir-iris-cases-list.png).
+The queue groups investigations with severity, source and indicator tags.
 
 ## Lab environment
 
@@ -99,7 +96,7 @@ The queue groups investigations with severity, source and indicator tags. [Full-
 
 ![VMware host-only and NAT network configuration](screenshots/vmware-network-config.png)
 
-[Full-size lab overview](screenshots/vmware-lab-overview.png) · [Full-size network settings](screenshots/vmware-network-config.png) · [Network topology](screenshots/lab-network-topology.png).
+![Lab network topology](screenshots/lab-network-topology.png)
 
 The private lab segment contains scenario traffic. Model, intelligence and messaging APIs require controlled egress. [Lab setup and communication paths](docs/lab-environment.md).
 
@@ -140,8 +137,6 @@ The recorded model-only group covers three scenarios; manual and integrated grou
 ### Endpoint telemetry
 
 ![Sysmon process-creation events in Windows Event Viewer](screenshots/sysmon-event-viewer.png)
-
-[Full-size alerts](screenshots/splunk-alerts.png) · [Authentication search](screenshots/splunk-brute-force-detection.png) · [Account search](screenshots/splunk-admin-detection.png) · [Event Viewer](screenshots/sysmon-event-viewer.png).
 
 ## Reading the results
 

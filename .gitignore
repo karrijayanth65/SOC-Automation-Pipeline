@@ -7,6 +7,3 @@ test-output/
 *.key
 *.pem
 *.pfx
-AGENTS.md
-agent.md
-Bible.md

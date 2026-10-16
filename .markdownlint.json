@@ -1,1 +1,1 @@
-{"default":true,"MD013":false,"MD060":false,"MD033":{"allowed_elements":["details","summary"]}}
+{"default":true,"MD013":false,"MD060":false,"MD033":{"allowed_elements":["details","summary","picture","source","img"]}}

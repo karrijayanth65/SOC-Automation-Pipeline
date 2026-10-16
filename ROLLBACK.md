@@ -20,11 +20,11 @@ Git will stop if switching would overwrite uncommitted work. Preserve that work 
 
 ## Undo a published remediation commit
 
-This delivery is tagged `remediation/2026-10-16`; the preserved original is tagged `rollback/pre-remediation-2026-10-16`. To undo the whole delivery on a clean branch that contains it, use a new revert commit:
+This delivery is tagged `remediation/jayanth-k-2026-10-16`; the preserved original is tagged `rollback/pre-remediation-2026-10-16`. To undo the whole delivery on a clean branch that contains it, use a new revert commit:
 
 ```bash
 git fetch origin --tags
-git revert --no-commit rollback/pre-remediation-2026-10-16..remediation/2026-10-16
+git revert --no-commit rollback/pre-remediation-2026-10-16..remediation/jayanth-k-2026-10-16
 git commit -m "Revert remediation delivery"
 ```
 

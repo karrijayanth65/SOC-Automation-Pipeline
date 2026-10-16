@@ -143,7 +143,7 @@ function formatReport(model, alert) {
     irisAlertBody: {
       alert_title: `[${severity}] ${report.title}`,
       alert_description: report.summary,
-      alert_source: 'Splunk / SOC-Automation-Pipeline',
+      alert_source: 'Splunk / SOC-Automation-Pipeline / Jayanth K',
       alert_source_ref: body.sid,
       alert_customer_id: 1,
       alert_severity_id: severityIds[severity],

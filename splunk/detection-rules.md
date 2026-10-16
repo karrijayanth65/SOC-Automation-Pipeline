@@ -1,12 +1,12 @@
-# Splunk Detection Rules
+# Adapted Splunk Detection Rules
 
 These five saved alerts turn Windows and Sysmon events into investigation leads: repeated failures, executable hashes, service probing, account changes and PowerShell activity. Read each rule together with the fields it passes downstream and the question an analyst should investigate.
 
-The recorded Splunk configuration uses the `chris-project` index and webhook delivery to n8n. Interface captures are in `screenshots/`.
+These query examples use the `jayanth_k` index for the Jayanth K project. This is an example deployment name, not proof that an index has been created or that these searches have executed. Historical interface captures remain unchanged in `screenshots/`.
 
 [Home](../README.md) · [Current input contract](validated-inputs.md) · [Scenarios](../docs/attack-scenarios.md)
 
-The queries below preserve the recorded lab configuration. For the validated deployment export, use the timezone-qualified, single-result examples in [validated-inputs.md](validated-inputs.md): some historical searches emit timezone-free dates or multivalue fields and need an explicit sender-side conversion. The recorded priority-rule behavior below describes the historical model prompt; the deployment export uses the [current prompt and formatter](../docs/prompts-and-code.md).
+The queries below retain the historical detection logic with the index name adapted for Jayanth K. For the validated deployment export, use the timezone-qualified, single-result examples in [validated-inputs.md](validated-inputs.md): some historical searches emit timezone-free dates or multivalue fields and need an explicit sender-side conversion. The recorded priority-rule behavior below describes the historical model prompt; the deployment export uses the [current prompt and formatter](../docs/prompts-and-code.md).
 
 All alerts were disabled after testing to prevent repeated triggering during evaluation runs — this is reflected in the "Disabled" status shown in the Splunk alerts UI.
 
@@ -27,7 +27,7 @@ All alerts were disabled after testing to prevent repeated triggering during eva
 Triggers when a new user account is created (EID 4720) or when a user is added to the local Administrators group (EID 4732). Results are aggregated by `target_account` to capture both the account created and the user who initiated the change.
 
 ```spl
-index=chris-project (source="WinEventLog:Security" OR sourcetype="WinEventLog:Security")
+index="jayanth_k" (source="WinEventLog:Security" OR sourcetype="WinEventLog:Security")
 (EventCode=4720 OR EventCode=4732)
 | eval action=case(
     EventCode=4720, "User Account Created",
@@ -82,7 +82,7 @@ The system prompt has a dedicated priority rule for this alert type — if `atta
 Aggregates failed login events (EID 4625) by computer, user, and source IP. Triggers when the count reaches 3 or more within the alert's time window.
 
 ```spl
-index="chris-project" EventCode=4625
+index="jayanth_k" EventCode=4625
 | eval user=coalesce(user, Account_Name, TargetUserName)
 | eval src_ip=coalesce(src_ip, Source_Network_Address, IpAddress)
 | stats count min(_time) as _time by ComputerName user src_ip
@@ -116,7 +116,7 @@ The system prompt IP enrichment logic checks whether `src_ip` is public or priva
 Captures all Sysmon process creation events and extracts the SHA256 hash via regex. Returns the most recent matching event. The hash is then passed to the LLM for VirusTotal lookup.
 
 ```spl
-index=chris-project source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1
+index="jayanth_k" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" EventID=1
 | rex field=Hashes "SHA256=(?<sha256>[A-Fa-f0-9]{64})"
 | eval alert_type="Malicious File Detection"
 | table _time Computer Image CommandLine sha256
@@ -149,7 +149,7 @@ The system prompt file hash enrichment logic detects `sha256` in the payload and
 Parses Windows Firewall DROP events using regex to extract source IP, destination IP, and ports. Filters for connections targeting common Windows service ports (135, 139, 445, 3389, 5985, 5986). Triggers when a source IP hits 3 or more unique ports, or generates 5 or more drops.
 
 ```spl
-index=chris-project sourcetype=windows_firewall "DROP"
+index="jayanth_k" sourcetype=windows_firewall "DROP"
 | rex field=_raw "DROP\s+\w+\s+(?<src_ip>\d{1,3}(?:\.\d{1,3}){3})\s+(?<dst_ip>\d{1,3}(?:\.\d{1,3}){3})\s+(?<src_port>\d+)\s+(?<dst_port>\d+)"
 | where isnotnull(src_ip) AND isnotnull(dst_ip) AND isnotnull(dst_port)
 | search dst_port IN (135,139,445,3389,5985,5986)
@@ -202,7 +202,7 @@ Filters Sysmon process creation events for PowerShell or pwsh processes (excludi
 - `Base64Decode` — `FromBase64String`
 
 ```spl
-index="chris-project" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" (EventCode=1 OR EventID=1)
+index="jayanth_k" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" (EventCode=1 OR EventID=1)
 | eval image_lc=lower(coalesce(Image,"")), cmd_lc=lower(coalesce(CommandLine,""))
 | where like(image_lc,"%\\powershell.exe") OR like(image_lc,"%\\pwsh.exe")
 | where NOT like(image_lc,"%\\splunk-powershell.exe")

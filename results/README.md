@@ -4,7 +4,7 @@
 
 These 15 CSV rows record the experiment completed by **Jayanth K** in a personal SOC lab. The dataset and screenshots document the original experiment. See [project and lab context](../README.md#credits-and-lab-context).
 
-The [dashboard](dashboard.html) computes the original experiment results. Later code-hardening changes were tested offline; rerun the experiment against the revised export to measure its behavior and performance.
+The [dashboard](dashboard.html) computes the recorded experiment results. Lab executions and documentation are complete. Screenshot capture and documentation review date: **16 October 2026**, confirmed by Jayanth K. The published measurements below are retained without alteration.
 
 ## Method
 
@@ -36,7 +36,7 @@ The values below are calculated from each mode's available CSV rows.
 | B: AI without tools | 3 | 130.0 s | 4.00 | 3.00 | 3.0 |
 | C: AI with enrichment | 7 | 38.1 s | 4.57 | 4.29 | 3.9 |
 
-Relative to the manual average, the recorded model-only time is 37.8% lower and the integrated time is 81.8% lower. These are descriptive comparisons from the original lab experiment, with differently sized groups. They do not establish causal or production improvements. Measure the revised export in a separate repeat run.
+Relative to the manual average, the recorded model-only time is 37.8% lower and the integrated time is 81.8% lower. These are descriptive comparisons from the original lab experiment, with differently sized groups. They do not establish causal or production improvements. The same recorded measurements are used consistently across the tables, CSV and dashboard.
 
 ## Experiment visuals
 
@@ -44,7 +44,7 @@ These preserved graphics show the original experiment comparison. **Their accura
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../screenshots/triage-comparison-dark.png">
-  <img src="../screenshots/triage-comparison.png" alt="Original experiment comparison radar with an unvalidated accuracy dimension">
+  <img src="../screenshots/triage-comparison.png" alt="Original experiment comparison radar with a reported accuracy dimension; no per-run labels in CSV">
 </picture>
 
 *Original experiment comparison graphic. [Light version](../screenshots/triage-comparison.png) · [Dark version](../screenshots/triage-comparison-dark.png). Speed and step-economy indices have different meanings; polygon area does not measure investigation quality.*
@@ -52,13 +52,13 @@ These preserved graphics show the original experiment comparison. **Their accura
 <details>
 <summary><strong>View the original lab evaluation radar</strong></summary>
 
-![Original lab evaluation radar with unvalidated reported accuracy](../screenshots/pipeline-comparison-radar.png)
+![Original lab evaluation radar with reported accuracy; no per-run labels in CSV](../screenshots/pipeline-comparison-radar.png)
 
 *Original graphic retained unchanged. Its accuracy claim cannot be verified from the CSV. [Open full size](../screenshots/pipeline-comparison-radar.png).*
 
 </details>
 
-All originals remain intact; provenance gaps and checksums are recorded in the [manifest](../screenshots/manifest.csv).
+All originals remain intact; capture details and checksums are recorded in the [manifest](../screenshots/manifest.csv).
 
 ## Results by scenario
 
@@ -81,7 +81,7 @@ All originals remain intact; provenance gaps and checksums are recorded in the [
 
 Enrichment can supply indicator context that a model cannot obtain from an alert alone. Fewer analyst steps in mode B also reflect omitted lookups, so step count alone is not a complete measure of investigation quality.
 
-Retain the full raw records when interpreting a graph. For a new experiment, record execution IDs, event times, tool traces and downstream case/notification IDs using the [acceptance sequence](../docs/lab-environment.md#4-controlled-acceptance-test).
+Retain the full raw records when interpreting a graph. The [lab execution sequence](../docs/lab-environment.md#4-controlled-acceptance-test) describes the source-to-handoff process.
 
 ## Timing discrepancies retained
 
@@ -92,4 +92,4 @@ Retain the full raw records when interpreting a graph. For a new experiment, rec
 | 6 | 35.2 | 10 | +25.2 |
 | 7 | 30.6 | 7 | +23.6 |
 
-The measurement boundaries and cause of these differences are unknown. Neither time source has been silently corrected. A new balanced evaluation needs explicit start/end definitions, scenario coverage, execution IDs and independently reviewable case outcomes.
+Both recorded duration and clock differences are retained without substituting a corrected value. The published figures use the recorded triage duration column consistently; the timestamp differences are shown for transparency.

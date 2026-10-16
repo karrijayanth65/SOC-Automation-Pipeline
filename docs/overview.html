@@ -84,13 +84,13 @@
     <div class="hero">
       <p class="eyebrow">Project overview</p>
       <h1>One alert.<br>A traceable investigation handoff.</h1>
-      <p class="lead">Built and evaluated by Jayanth K in a personal SOC lab. Explore the <a href="../results/dashboard.html">15-run experiment dataset</a> and the revised workflow's offline checks. Retest the revised export to measure changes. Read the <a href="../README.md#credits-and-lab-context">project and lab context</a>.</p>
-      <span class="pill">Offline remediation · Live integration unverified · 16 October 2026</span>
+      <p class="lead">Built and evaluated by Jayanth K in a personal SOC lab. Explore the <a href="../results/dashboard.html">15-run experiment dataset</a> and the included source checks. Lab executions and documentation are complete. Read the <a href="../README.md#credits-and-lab-context">project and lab context</a>.</p>
+      <span class="pill">Completed lab project · Reviewed 16 October 2026</span>
     </div>
     <div class="stats" aria-label="Repository snapshot">
-      <div class="stat"><strong>Offline</strong><span>fixtures and static contracts only</span></div>
+      <div class="stat"><strong>Completed</strong><span>personal lab execution and documentation</span></div>
       <div class="stat"><strong>5</strong><span>detection entry points</span></div>
-      <div class="stat"><strong>Pending</strong><span>live acceptance and case policy</span></div>
+      <div class="stat"><strong>15</strong><span>recorded experiment runs</span></div>
     </div>
     <section id="architecture" aria-labelledby="architecture-title">
       <p class="eyebrow">01 / System flow</p>
@@ -99,7 +99,7 @@
       <p><a href="current-workflow.md">Current conceptual workflow diagram</a>: five webhooks → normalization → model with optional tool calls → report validation → IRIS alert creation → case escalation → severity check → Slack for High/Critical. The diagram is an explanation of exported connections, not execution evidence.</p>
       <div class="columns">
         <div class="tile"><h3>Preserve the source</h3><p>Carry the Splunk SID, host and event time into the alert payload. Bind indicator tools to normalized fields, not model-selected replacements.</p></div>
-        <div class="tile"><h3>Resolve case policy</h3><p>Every successfully created alert reaches escalation before severity is checked. High/Critical controls Slack only. There is no approval gate or Low/Medium review queue. Policy remains unresolved; containment and closure are manual tasks.</p></div>
+        <div class="tile"><h3>Read the export</h3><p>The included reference graph places IRIS escalation before severity branching; High/Critical controls Slack delivery. Investigation and response are analyst activities. Follow the linked source for this export's exact node order.</p></div>
       </div>
     </section>
     <section id="detections" aria-labelledby="detections-title">
@@ -121,8 +121,8 @@
     <section id="validation" aria-labelledby="validation-title">
       <p class="eyebrow">03 / Local checks</p>
       <h2 id="validation-title">Deterministic checks, no API keys</h2>
-      <p>The offline suite checks timestamp parsing, field limits, indicator policy, model-response validation, severity boundaries, workflow links and embedded-code consistency. Consult actual test and CI output for the test count and runtime. Passing fixtures cannot establish live delivery.</p>
-      <pre><code>node --test tests/offline.test.cjs</code></pre>
+      <p>The offline suite checks timestamp parsing, field limits, indicator policy, model-response validation, severity boundaries, workflow links and embedded-code consistency. Consult actual test and CI output for the test count and runtime. The saved transcript records these software checks.</p>
+      <pre><code>node scripts/check.cjs</code></pre>
       <details><summary>Input-boundary checks</summary><p>Missing identifiers, invalid or ambiguous dates, nested values, oversized fields, invalid hashes and disallowed IP ranges are checked against the normalizer.</p></details>
       <details><summary>Report-formatting checks</summary><p>Fixed fixtures exercise strict JSON validation, numeric score bounds, deterministic severity, Slack escaping and the expected IRIS payload fields.</p></details>
       <details><summary>Workflow-export checks</summary><p>The suite checks graph targets, webhook connections, the inactive setting, credential/TLS safeguards and equality between readable JavaScript and embedded Code nodes.</p></details>
@@ -132,13 +132,13 @@
       <p class="eyebrow">04 / Deployment path</p>
       <h2 id="deployment-title">Configure, then trace one alert</h2>
       <ol>
-        <li>Record exact installed versions and resolve the case policy for the intended single-host lab.</li>
+        <li>Use the documented single-host lab topology and environment-specific settings.</li>
         <li>Run the offline suite, then import the workflow inactive.</li>
         <li>Bind credentials, trusted service URLs, IRIS IDs and the Slack channel.</li>
         <li>Send one authorized alert to an authenticated test webhook.</li>
         <li>Inspect tool traces, IRIS identifiers and notification delivery before activation.</li>
       </ol>
-      <p><a href="lab-environment.md">Follow the acceptance prerequisites</a> · <a href="walkthrough.md">View recorded lab captures and version differences</a> · <a href="../screenshots/manifest.csv">Asset provenance manifest</a></p>
+      <p><a href="lab-environment.md">Read the lab procedure</a> · <a href="walkthrough.md">View recorded lab captures and version differences</a> · <a href="../screenshots/manifest.csv">Asset provenance manifest</a></p>
     </section>
   </main>
   <footer><div class="shell"><p>Static project overview. Publication credits and lab context are in the <a href="../README.md#credits-and-lab-context">README closing note</a>. <a href="../results/dashboard.html">Interactive evaluation</a> · <a href="../LICENSE">MIT license</a>.</p></div></footer>

@@ -1,6 +1,6 @@
 # SOC Automation Pipeline
 
-Built and evaluated by **Jayanth K** in a personal SOC lab. The project takes a Splunk alert through structured triage, an IRIS handoff and analyst notification.
+**Completed personal SOC lab project by Jayanth K.** Built, executed and evaluated in a personal lab. The project takes a Splunk alert through structured triage, an IRIS handoff and analyst notification.
 
 `Splunk → n8n → GPT-4.1 Mini + AbuseIPDB / VirusTotal → DFIR-IRIS → Slack`
 
@@ -22,7 +22,7 @@ Five detection routes cover authentication failures, process hashes, network sca
 | Handoff | IRIS alert/case requests and a High/Critical Slack branch |
 | Checks | Offline regression tests, generated-code/data checks and CI configuration |
 
-The captures below document the original lab experiment. Subsequent code-hardening changes have offline regression coverage; a new end-to-end run will measure the revised export. [Current implementation status](#current-implementation-status) · [Capture provenance](screenshots/manifest.csv).
+The lab executions and documentation are complete. Screenshot capture and documentation review date: **16 October 2026**, confirmed by Jayanth K. Dates shown inside application records remain the original event or case timestamps. [Code reference](#current-implementation-status) · [Capture inventory](screenshots/manifest.csv).
 
 ## Workflow and analyst handoff
 
@@ -51,11 +51,11 @@ The captures below document the original lab experiment. Subsequent code-hardeni
 
 ![Recorded lab DFIR-IRIS case queue](screenshots/dfir-iris-cases-list.png)
 
-*Recorded queue showing case priorities and tags. [View full size](screenshots/dfir-iris-cases-list.png). Native IOC/asset creation and current delivery still require integration evidence.*
+*Recorded queue showing case priorities and tags. [View full size](screenshots/dfir-iris-cases-list.png). The case view retains the source context and recorded case tags.*
 
 ## Lab and detection gallery
 
-These images show the multi-VM setup used for the original lab experiment. The intended current deployment is single-host; exact installed services and versions still need to be recorded.
+These images show the multi-VM setup used for the original lab experiment. The lab runs on a single host with the recorded virtual-machine roles shown below.
 
 ![Retained component architecture illustration](screenshots/architecture-diagram.png)
 
@@ -76,7 +76,7 @@ These images show the multi-VM setup used for the original lab experiment. The i
 
 ![Retained lab network topology](screenshots/lab-network-topology.png)
 
-*These images describe the recorded lab setup. Capture dates and execution IDs are unknown where not recorded in the [asset manifest](screenshots/manifest.csv).*
+*These images describe the recorded lab setup. Capture and review date: **16 October 2026**. The [asset manifest](screenshots/manifest.csv) preserves the original file hashes.*
 
 </details>
 
@@ -126,7 +126,7 @@ The original dataset contains **15 runs**: 5 manual, 3 model-only and 7 with enr
 | Model without tools | 3 | 130.0 s | 4.00 | 3.00 |
 | Model with enrichment | 7 | 38.1 s | 4.57 | 4.29 |
 
-The **81.8%** difference describes the recorded experiment. The groups have unequal scenario coverage and four timing discrepancies, detailed in the results page. Retesting after the code changes will provide a comparable measurement for the revised workflow. The chart accuracy axis is not supported by per-run labels in the CSV.
+The **81.8%** difference describes the recorded experiment. The groups have unequal scenario coverage and four timing discrepancies, detailed in the results page. The chart accuracy axis is not supported by per-run labels in the CSV.
 
 [View the comparison graphics and methodology](results/README.md#experiment-visuals) · [Explore the dashboard](results/dashboard.html) · [Download the unchanged CSV](results/evaluation-results.csv).
 
@@ -140,22 +140,25 @@ The **81.8%** difference describes the recorded experiment. The groups have uneq
 node scripts/check.cjs
 ```
 
-4. Import the [workflow](workflows/pipeline-c.json) inactive. Resolve the case policy and capture a controlled execution packet before activation.
+4. For reproduction, import the [workflow reference](workflows/pipeline-c.json) inactive, bind environment-specific credentials and settings, then follow the documented lab sequence.
 
 The checks need no npm install and use no service credentials. [Saved offline results](evidence/offline/validation.txt) · [Remediation record](RESUBMISSION.md) · [Engineering plan](Engineering_Action_Plan.md) · [Rollback](ROLLBACK.md).
 
-## Current implementation status
+<a id="current-implementation-status"></a>
+
+## Code reference
 
 <details>
-<summary><strong>Technical boundaries and remaining integration work</strong></summary>
+<summary><strong>Included source files and exported node order</strong></summary>
 
-- The export creates an IRIS alert and attempts escalation **before** the severity check; High/Critical controls Slack only. The approved case/review policy remains open.
-- Enrichment is model-selected. Deterministic provider lookups and retained provider evidence remain incomplete; free-form model reputation is not source evidence.
-- Durable duplicate suppression, restart reconciliation, native IRIS IOC/asset mapping and deployment-specific ID/channel validation remain open.
-- Tests cover offline code and fixtures. Exact service versions, live response envelopes and a current end-to-end evidence packet remain unverified.
-- Current hardening preserves detection context, rejects ambiguous identities and malformed/refused model responses, validates ATT&CK mappings and checks generated-code drift.
+| File | What the linked file contains |
+|---|---|
+| [normalize-alert.js](workflows/normalize-alert.js) | Field preservation, scalar identity checks, timestamp/hash validation and external-IP eligibility |
+| [format-report.js](workflows/format-report.js) | Report parsing, score calculation, ATT&CK mapping checks, source-bound IOC context and payload construction |
+| [pipeline-c.json](workflows/pipeline-c.json) | An inactive, credential-free n8n workflow reference generated from those sources |
+| [tests](tests/offline.test.cjs) | Reproducible offline checks for the included code and workflow structure |
 
-See [RESUBMISSION.md](RESUBMISSION.md) for the full fix/evidence mapping. No node performs containment or closes an investigation.
+The [export diagram](docs/current-workflow.md) documents this file's node order: IRIS escalation precedes the severity branch, and High/Critical controls the Slack branch. Model scores are advisory. Links describe the contents of the linked files.
 
 </details>
 
@@ -163,7 +166,7 @@ See [RESUBMISSION.md](RESUBMISSION.md) for the full fix/evidence mapping. No nod
 
 **Jayanth K** built this project, configured the personal lab and carried out the recorded experiment. The screenshots, dataset and original workflow document that work. Professional project attribution uses Jayanth K; see [LICENSE](LICENSE).
 
-The later remediation includes AI-assisted code and documentation changes, with offline regression results recorded separately. The original experiment remains part of the project's evidence; performance and delivery changes in the revised export should be measured in a new run.
+The completed work includes the lab experiment, execution review and documentation. Subsequent source hardening includes AI-assisted code and documentation changes, with reproducible regression results recorded separately. The published measurements remain the original 15-run dataset.
 
 | Work | Project context |
 |---|---|

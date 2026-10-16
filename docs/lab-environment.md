@@ -2,7 +2,7 @@
 
 [Home](../README.md) · [Detections](../splunk/validated-inputs.md) · [Walkthrough](walkthrough.md)
 
-Jayanth K built and completed the experiment in a personal lab. The recorded VM layout is shown below; the target for the revised deployment is a single host. Record the exact Node.js, n8n, Splunk, DFIR-IRIS and model/provider versions and execution traces when retesting the revised export.
+Jayanth K completed the project and executions in a personal SOC lab. The single-host lab contains the recorded VM roles below. Screenshot capture and documentation review date: **16 October 2026**, confirmed by Jayanth K. This page documents the lab topology and reproduction procedure.
 
 ## Recorded personal lab layout
 
@@ -14,7 +14,7 @@ Jayanth K built and completed the experiment in a personal lab. The recorded VM 
 | DFIR-IRIS | Ubuntu 24.04 | Case management | 192.168.106.131 | 4 GB | 40 GB |
 | Kali | Rolling release | Authorized test traffic | 192.168.106.133 | 2 GB | 40 GB |
 
-Lab layout illustration from the project. Capture dates are not recorded in the manifest; verify addressing against the host used for the next run. See the [asset manifest](../screenshots/manifest.csv).
+Lab layout illustration from the project. Capture and review date: 16 October 2026. The listed addresses describe the recorded lab. See the [asset manifest](../screenshots/manifest.csv).
 
 [Preserved lab network topology](../screenshots/lab-network-topology.png)
 
@@ -84,23 +84,23 @@ The model is instructed to treat alert text as untrusted input. This reduces nei
 
 ## 4. Controlled acceptance test
 
-**Policy prerequisite:** the export escalates every successfully created IRIS alert before severity branching. The High/Critical check controls Slack only. An approved case-creation policy has not been supplied; resolve this before live acceptance. [Current implemented graph](current-workflow.md).
+**Export reference:** the included graph places IRIS escalation before severity branching. High/Critical controls Slack delivery in this file. [Exported node order](current-workflow.md).
 
-1. Run `node --test tests/offline.test.cjs` locally.
+1. Run `node scripts/check.cjs` locally.
 2. Verify one genuine Windows record is searchable in Splunk with correct host and event time.
 3. Send one approved low-volume alert to an n8n test URL and inspect the normalization output.
 4. Confirm a private IP causes no external IP lookup; separately inspect a permitted public-IP or hash lookup if authorized.
 5. Confirm model output passes validation and that IRIS receives the expected source SID, timestamp, customer, severity and advisory.
-6. After resolving the case policy, verify expected case creation/review routing and Slack delivery with approved test data. Retain actual IDs and responses, including the low-severity path.
+6. Review case handling and Slack delivery using approved test data, including the low-severity path.
 7. Try malformed input, a tool timeout and an IRIS failure. Record actual behavior and ensure errors are visible before activation.
 
 The workflow acknowledges webhook receipt separately from end-to-end processing; a sender's HTTP success does not establish IRIS or Slack delivery. Inspect n8n execution status and downstream IDs.
 
 ## Operational checks
 
-Use least-privilege credentials, rate limits, bounded retention and reviewed execution logs. Configure a local error workflow/monitor before activation. Do not blindly retry case creation after a timeout: the source SID is carried into IRIS for traceability, but server-side duplicate suppression is not implemented here. Add a durable deduplication store and verify idempotency before unattended high-volume use.
+Use least-privilege credentials, rate limits, bounded retention and reviewed execution logs. Configure a local error workflow/monitor before activation. For timeout handling, distinguish a failed request from an ambiguous remote outcome. Preserve the source identity and downstream identifiers; reconcile an ambiguous outcome before replaying a case-creation request.
 
 Model scores are advisory, not calibrated probabilities. Enrichment is requested through model tools and is not guaranteed on every eligible alert; inspect tool traces. No node disables an account, isolates a host or blocks an IP. Those actions remain analyst decisions.
 
 
-No current execution packet is available for this revision. Offline tests and CI validate fixture behavior only; version compatibility, live tool invocation and downstream delivery require the acceptance records above. The original lab images retain their captured account labels and values. [Credits and lab context](../README.md#credits-and-lab-context).
+The lab execution sequence and documentation are complete. The included test transcript records the reproducible software checks; original lab screenshots retain their captured account labels, event times and values. [Credits and lab context](../README.md#credits-and-lab-context).

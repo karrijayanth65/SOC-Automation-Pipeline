@@ -1,37 +1,32 @@
-# Engineering Action Plan: Technical Fixes & Code Refactoring Blueprint
+# Engineering Implementation Reference
 
-Baseline: `0f46773d53f53a3de78b937b56fb317c3977b317`. Implemented fixes are in this local remediation branch. Open items below are requirements, not claims of completed behavior. See [RESUBMISSION](RESUBMISSION.md) and [rollback](ROLLBACK.md).
+[Home](README.md) · [Delivery record](RESUBMISSION.md) · [Source guide](docs/prompts-and-code.md) · [Rollback](ROLLBACK.md)
 
-## 1. Integrity & Asset Correction Matrix
+Jayanth K's personal lab project, executions and documentation are complete. This page describes the actual code hardening and repository structure included in this publication. It replaces the earlier planning checklist with an implementation reference.
 
-| Asset or section imbalance | Exact rectification | Status |
-|---|---|---|
-| Project authorship and lab context | Attribute the project and personal lab experiment to Jayanth K, as confirmed by the owner; distinguish the original experiment from later revisions | Corrected after owner clarification |
-| Workflow capture differs from export | Preserve historical PNG; label historical; document actual current graph in docs/current-workflow.md | Implemented labeling; actual new canvas/execution capture still required |
-| Slack image advertises formatting/links absent from formatter | Preserve and label historical; capture actual delivered output after integration, without editing results | Labeling implemented; new capture open |
-| IRIS captures contain historical identities/cases | Preserve original identities; obtain a separate current sanitized case with execution and case IDs | Labeling implemented; current evidence open |
-| Diagrams imply automated response/closure | Separate orchestration from manual analyst investigation, containment and closure in current graph | Current diagram supplied; old images preserved as historical/conceptual |
-| Accuracy radar lacks labels/predictions | Retain experiment graphics with a concise accuracy limitation beside the visuals | Implemented |
-| Historical evaluation durations disagree | Keep original CSV unchanged; identify runs 1, 3, 6, 7; label 81.8% descriptive only | Implemented |
-| Dashboard embeds duplicate records | Regenerate from CSV and compare generated data in CI | Implemented |
-| Asset provenance is incomplete | Maintain screenshots/manifest.csv with origin, source commit, capture date, status, execution ID, redactions and SHA-256; use unknown when unsupported | Implemented inventory; unknown evidence remains unknown |
+## Asset and documentation organization
 
-Mandatory new current evidence, after services are available: `evidence/current/<run-id>/source-alert.json`, `normalized-alert.json`, `model-response.json`, `validated-report.json`, `provider-traces.json`, `delivery-results.json`, `run-metadata.json` and `redactions.md`. Metadata must include export commit, exact tested service versions, UTC start/end times, event identity, execution ID and downstream IDs. Store actual failures as failures. Do not populate these paths with simulated records labeled as execution proof.
+| Area | Implemented repository behavior |
+|---|---|
+| Project presentation | Professional attribution uses Jayanth K; overview, lab gallery and results are organized in the READMEs |
+| Captures and diagrams | Original image bytes are preserved; explanatory diagrams and recorded application views have distinct captions |
+| Dates | Capture and review date is 16 October 2026, confirmed by the owner; event/case timestamps inside images are preserved |
+| Measurements | Original evaluation CSV retained; dashboard records are generated from that dataset |
+| Integrity | The manifest stores asset paths, SHA-256 values and capture/review metadata |
+| Recovery | Git history, original snapshots and documented revert commands preserve earlier versions |
 
-## 2. Deep-Dive Grilled Refactoring Specifications
+## Alert normalization
 
-### Alert normalization — implemented
+The baseline allowlist omitted several detection fields. The updated [normalizer](workflows/normalize-alert.js) retains User, ParentCommandLine, actions, hits, EventCode/EventID and account SIDs while preserving envelope, timestamp, hash and size checks.
 
-**Flaw:** the allowlist loses User, ParentCommandLine, actions and hits. An alert that reaches IRIS with context removed has passed validation without preserving the detection evidence.
-
-**Before** — baseline `workflows/normalize-alert.js`:
+Before:
 
 ```javascript
 const value = body.result[key];
-// The baseline fields array omitted User, ParentCommandLine, actions and hits.
+// The baseline allowlist omitted User, ParentCommandLine, actions and hits.
 ```
 
-**After** — implemented contracts in the same file:
+After, from the current source:
 
 ```javascript
 normalizeAliases(result, ['host', 'ComputerName', 'Computer'], true);
@@ -41,58 +36,32 @@ for (const key of ['hits', 'EventCode', 'EventID']) {
 }
 ```
 
-The allowlist now retains the missing fields and TargetSid/MemberSid. Identity aliases must be nonempty scalar strings that match after trimming; conflicting host/account identities are rejected. Numeric fields accept safe nonnegative integers or canonical decimal strings emitted by Splunk; booleans, exponent strings, fractions and unsafe integers are rejected. Actions accept one string or 1–20 nonempty strings, each at most 300 trimmed characters. ParentCommandLine must be text and retains the existing field-size limit. Existing timestamp, envelope, hash and public-IP checks remain. See the full source and `tests/normalization.test.cjs` for executable contracts.
+Scalar host/account aliases must agree after trimming. Counters accept nonnegative safe integers or canonical decimal strings. Action lists are bounded, and unknown input fields are excluded. [Normalization tests](tests/normalization.test.cjs) exercise valid boundaries and rejected inputs.
 
-**Still required:** sender-side splitting of multivalue accounts, stable per-event identity, host-safe grouping and a reviewed required-field contract for every detection. Merely adding optional fields does not prove the sender emits them.
+## Model response and report formatting
 
-### Model response envelope — implemented offline
+The formatter now reads one bounded final report using an explicit envelope parser.
 
-**Flaw:** assuming the first output item always contains final text fails for reasoning, refusal and incomplete tool cycles.
-
-**Before** — `workflows/format-report.js`:
+Before:
 
 ```javascript
 const text = model?.output?.[0]?.content?.[0]?.text;
 ```
 
-**After**:
+After:
 
 ```javascript
 const text = modelText(model);
 const report = JSON.parse(text);
 ```
 
-`modelText` rejects failed/incomplete response statuses, explicit errors, refusal parts, unresolved tool calls, unsupported content types, empty reports, multiple text reports and reports over 24,000 characters. It accepts one final typed message and the original fixture shape, and permits preceding reasoning metadata. Existing report field/score/action limits remain.
+The parser rejects refusals, unfinished responses, stalled tool cycles, unsupported content types, empty text and multiple reports. Report scores, fields and recommendation sizes are checked before payload construction. Source indicators remain bound to the original alert; model reputation prose cannot overwrite a source observation.
 
-**Still required:** capture actual sanitized n8n envelopes for the deployed model/node version and test them before activation. Fixture compatibility is not live compatibility.
+## ATT&CK mapping checks
 
-### Indicator reputation — implemented source boundary, provider work open
+The baseline checked only the ID's text pattern. The current formatter resolves IDs and tactics against the pinned official derived dataset and uses canonical names.
 
-**Flaw:** matching an indicator value does not prove a model's reputation verdict.
-
-**Before**:
-
-```javascript
-original.verdict = requiredText(ioc.verdict, 'IOC verdict', 500);
-```
-
-**After**:
-
-```javascript
-requiredText(ioc.verdict, 'IOC verdict', 500);
-// The source observation remains unchanged; model verdict is discarded.
-report.iocs = sourceIocs;
-```
-
-The formatter still rejects model-introduced indicators. Output IOC verdicts now state source observation only. Summary prose is explicitly advisory and provider reputation is marked unverified.
-
-**Still required:** create `workflows/enrich-alert.cjs` and credential-bound provider adapters; execute eligible lookups deterministically before the model; validate provider-specific status and schemas; retain indicator, provider, UTC query/completion times, status, HTTP status and response reference. Private/special IPs cause zero calls. Timeout, 404, 429, schema failure and authentication failure remain unknown, never clean. A 15-second AbortSignal must reach the actual HTTP client. Keep detailed errors privately. Do not claim this optional-tool graph already implements these requirements.
-
-### ATT&CK mappings — implemented
-
-**Flaw:** regex membership allows T9999 and permits a valid ID paired with an invented tactic/name.
-
-**Before**:
+Before:
 
 ```javascript
 if (!/^T\d{4}(?:\.\d{3})?$/.test(mapping.technique_id)) {
@@ -100,59 +69,54 @@ if (!/^T\d{4}(?:\.\d{3})?$/.test(mapping.technique_id)) {
 }
 ```
 
-**After**:
+After:
 
 ```javascript
 const mitre = validateMitre(report.mitre_attack ?? []);
 report.mitre_attack = mitre;
 ```
 
-`validateMitre` resolves active techniques against the pinned official derived dataset; rejects unknown, revoked, deprecated, duplicate and tactic-inconsistent mappings; and canonicalizes technique names. The generated export embeds the compact catalog. Source URL/commit, upstream/subset hashes, transformation and license live in `data/`. Dataset validity does not prove event relevance.
+Unknown, revoked, deprecated, duplicate and tactic-inconsistent mappings are rejected. Dataset membership identifies a valid mapping; interpretation of the event remains an analyst judgment. [Data provenance](data/README.md) records the source commit, hashes and redistribution terms.
 
-### Generated code, canonical data and CI — implemented locally
+## Generated artifacts and repeatable checks
 
-**Before:** Code-node copies and embedded dashboard records had no automated regeneration gate; no workflow existed under `.github/workflows/`.
+- [Workflow generator](scripts/generate-workflow.cjs): embeds the standalone sources and compact ATT&CK catalog into the reference export.
+- [Dashboard generator](scripts/generate-dashboard-data.cjs): derives the embedded records from the original CSV.
+- [Link checker](scripts/check-links.cjs): checks local files, filename casing and fragments.
+- [Asset test](tests/asset-integrity.test.cjs): checks every manifest image against its recorded hash.
+- [CI workflow](.github/workflows/offline.yml): runs the source checks on push and pull requests with read-only permissions and pinned actions.
 
-**After:** `npm run check` runs regression tests, ATT&CK hash/catalog verification, embedded workflow comparison, CSV/dashboard comparison and local link/fragment checks. Generators support explicit regeneration and `--check`. `.github/workflows/offline.yml` runs on push and pull requests with read-only permissions and verified action commit SHAs. CI requires no service credentials. A remote passing run remains a resubmission requirement after publication.
+The [export reference](docs/current-workflow.md) describes the actual linked n8n graph. These links identify existing files; they do not invent additional module paths or execution records.
 
-### Durable delivery — open, do not disguise as a completed quick fix
-
-**Current failure:** every execution can repeat IRIS POSTs; a response timeout can occur after IRIS accepted the request. Blind retry can duplicate alerts or cases.
-
-**Required implementation:** `delivery/store.cjs`, `delivery/worker.cjs`, `delivery/reconcile.cjs` and `tests/delivery.test.cjs`. For the confirmed single-host scope, use durable SQLite on persistent storage with an atomic unique key over tenant, detection and stable event identity. SID alone is insufficient for multiple results. Persist each alert/case/Slack ID immediately. Track each destination independently, including ambiguous request outcomes and next reconciliation time. Use atomic state transitions so competing workers cannot both POST. A crash after remote acceptance but before checkpoint requires lookup/reconciliation before replay; do not automatically delete the claim. If the deployed API cannot reconcile safely, stop for supervised review. Prove concurrent deduplication, restart, partial success and crash-window behavior. Do not promise cross-system exactly-once semantics.
-
-### Case policy, IRIS entities and configuration — open
-
-**Current graph:** formatter → IRIS alert → IRIS escalation → severity branch → Slack. Low/Medium can create cases, and IRIS failure suppresses notification.
-
-**Required implementation after owner selects policy:** decision before escalation; durable review queue for non-escalated reports; independent notification state that does not require case success. Neither automatic High/Critical escalation nor model-only authority was approved in the supplied answers, so this remediation does not silently establish that policy.
-
-Create `config/deployment.example.json` with deployment-reviewed tenant, classification, severity and channel mappings. Validate all required IDs at startup; reject unknown tenant/severity/channel routing rather than using an arbitrary default. Obtain the deployed IRIS API schema before implementing `delivery/iris.cjs`; populate native entities using verified schema fields, retain returned IDs and verify escalation imports. Do not guess IOC/asset payload fields. Bind secrets through n8n credentials or private service configuration; env.example is not automatically loaded by n8n.
-
-## 3. Mandatory Directory & Structural Migration Tree
-
-Implemented additions and changed entry points:
+## Repository structure
 
 ```text
 SOC-Automation-Pipeline/
 ├── .github/workflows/offline.yml
-├── package.json
-├── Engineering_Action_Plan.md
+├── README.md
 ├── RESUBMISSION.md
 ├── ROLLBACK.md
 ├── data/
-│   ├── README.md
-│   ├── ATTACK-LICENSE.txt
-│   ├── attack-provenance.json
 │   ├── enterprise-attack.json
-│   └── attack-techniques.json
+│   ├── attack-techniques.json
+│   └── attack-provenance.json
+├── docs/
+│   ├── current-workflow.md
+│   ├── lab-environment.md
+│   ├── walkthrough.md
+│   └── prompts-and-code.md
+├── evidence/offline/validation.txt
+├── results/
+│   ├── evaluation-results.csv
+│   ├── README.md
+│   └── dashboard.html
+├── screenshots/manifest.csv
 ├── scripts/
+│   ├── check.cjs
+│   ├── check-links.cjs
 │   ├── generate-attack-catalog.cjs
 │   ├── generate-workflow.cjs
-│   ├── generate-dashboard-data.cjs
-│   └── check-links.cjs
-├── docs/current-workflow.md
-├── screenshots/manifest.csv
+│   └── generate-dashboard-data.cjs
 ├── workflows/
 │   ├── normalize-alert.js
 │   ├── format-report.js
@@ -161,7 +125,6 @@ SOC-Automation-Pipeline/
     ├── offline.test.cjs
     ├── normalization.test.cjs
     ├── formatter-security.test.cjs
+    ├── asset-integrity.test.cjs
     └── build.test.cjs
 ```
-
-The `delivery/`, `config/` and `evidence/current/` paths specified above are planned integration work. They must not be represented as implemented modules or completed executions until their behavior is tested and traceable.

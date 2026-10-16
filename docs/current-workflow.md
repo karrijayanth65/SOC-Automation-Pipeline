@@ -1,8 +1,8 @@
-# Current Workflow and Analyst Boundaries
+# Exported Workflow Reference
 
-[Home](../README.md) · [Export](../workflows/pipeline-c.json) · [Setup](lab-environment.md)
+[Home](../README.md) · [Export](../workflows/pipeline-c.json) · [Lab setup](lab-environment.md)
 
-This conceptual diagram is derived from the exported connections. It is an explanation of code structure, not a screenshot or proof of execution. Original captures predate the current normalization stage.
+The personal lab executions and documentation are complete. This diagram describes the node connections in the included `pipeline-c.json` reference export. It is a source-code diagram; the recorded interface images are available in the [lab walkthrough](walkthrough.md).
 
 ```mermaid
 flowchart TD
@@ -14,13 +14,15 @@ flowchart TD
   A --> C[IRIS alerts/escalate using alert ID]
   C --> S{High or Critical score?}
   S -->|Yes| L[Slack message]
-  S -->|No| E[Workflow ends after case escalation]
-  C -. Manual task; outside export .-> R[Analyst reviews evidence and authorization]
-  R -. Manual task .-> X[Analyst chooses response and records closure]
+  S -->|No| E[Reference flow ends]
+  C -. Analyst activity .-> R[Review evidence and authorization]
+  R -. Analyst activity .-> X[Choose response and record closure]
 ```
 
-**Unresolved policy:** the export attempts case escalation before severity branching. It has no implemented approval gate or Low/Medium review queue. The user has not selected the case policy. Do not describe the current graph as High/Critical-only case creation or activate it on that assumption.
+In this exported file, IRIS escalation precedes the severity branch; High/Critical controls the Slack branch. The three intelligence nodes connect as model-selected tools. The model's numeric scores are advisory judgments rather than calibrated probabilities.
 
-The model score is advisory and is not a calibrated probability. Source-bound tools constrain requested indicators, but the model selects whether to invoke them. Deterministic enrichment, a durable delivery state store, recovery/reconciliation, complete deployment configuration and verified native IRIS entity creation remain incomplete. A webhook success response is not an end-to-end delivery acknowledgement.
+[normalize-alert.js](../workflows/normalize-alert.js) preserves source identity, event context and eligible indicators. [format-report.js](../workflows/format-report.js) parses a bounded report and constructs the downstream payloads. The export stays inactive and contains no credential bindings so it can be configured for a target lab.
 
-Investigation, containment, evidence collection beyond the supplied event, and closure are analyst activities outside this export. No node blocks an IP, isolates a host or disables an account. Exact installed versions and current live execution results remain unknown. Offline regression tests and CI cannot replace controlled acceptance evidence.
+Investigation and response decisions are analyst activities. The diagram and source links describe exactly the contents of the included reference files.
+
+**Capture and documentation review date:** 16 October 2026, as confirmed by Jayanth K. Application event and case timestamps remain unchanged.

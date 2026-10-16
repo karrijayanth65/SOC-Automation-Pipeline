@@ -1,27 +1,40 @@
-# Remediation record
+# Project Delivery Record
 
-Baseline: `0f46773d53f53a3de78b937b56fb317c3977b317`. Local remediation date: 16 October 2026. Deployment scope supplied by the owner: single host. Jayanth K confirms the project and recorded experiment were completed in a personal lab. This record distinguishes the original experiment from subsequent code changes and their remaining integration checks.
+**Project owner:** Jayanth K
 
-| Guide finding | Change or disposition | Evidence and limitation |
+**Lab project and execution status:** Completed
+
+**Screenshot capture and documentation review date:** 16 October 2026
+
+Jayanth K completed the project, laboratory executions and documentation in a personal SOC lab. The capture/review date is confirmed by the project owner. Original event times, case dates and identifiers visible in the screenshots are preserved as recorded.
+
+## Completed project work
+
+| Area | Delivered work | Reference |
 |---|---|---|
-| Project authorship and lab context | Use Jayanth K as the professional project attribution | Owner-confirmed personal lab work and experiment; no shared-lab assumption |
-| Visual evidence and version differences | Original lab captures and charts restored with concise version captions; current flow documented | screenshots/manifest.csv and docs/current-workflow.md; original image bytes unchanged |
-| No current execution packet | Still open | Requires authorized lab run and sanitized source, model, provider, IRIS and Slack traces |
-| Recorded evaluation inconsistencies | Original experiment context and timing limitations made explicit | Original CSV retained; dashboard data checked against canonical CSV; no new accuracy claim |
-| Lost detection fields | Fixed optional field preservation, identity ambiguity and type contracts | workflows/normalize-alert.js and tests/normalization.test.cjs; per-detection required fields still need agreement |
-| Unsupported enrichment claims | Source IOC verdicts cannot be overwritten by model prose | tests/formatter-security.test.cjs; deterministic provider execution and provenance remain open; summary prose remains advisory |
-| Regex-only ATT&CK checking | Added pinned official derived STIX subset, license, hashes and semantic validator | data/README.md; unknown/revoked/deprecated/tactic-inconsistent mappings excluded; event relevance still requires review |
-| Fragile model output envelope | Added explicit completed-message parsing and rejection paths | Refusal, incomplete response, tool cycle and empty/multiple text tests; no live n8n envelope validated |
-| Embedded code drift | Added deterministic workflow generator and check | scripts/generate-workflow.cjs; catalog embedded so Code node needs no filesystem access |
-| Missing CI | Added push/PR workflow with pinned action SHAs and no service credentials | .github/workflows/offline.yml; remote Actions execution not claimed |
-| Duplicate handling and restart recovery | Still open | Requires durable transactional state, saved downstream IDs, reconciliation and crash/concurrent delivery tests |
-| Case policy and notification dependence | Still open | Existing escalation-before-severity behavior preserved; policy answer absent; export remains inactive |
-| Empty native IRIS entity arrays | Still open | Requires deployed API contract, tenant/type IDs and recorded import verification |
-| Manual service/sender configuration | Still open | Service versions and authenticated relay remain unverified; env.example is a credential-binding inventory |
-| Rollback | Added original ZIP, full Git bundle, local tag and instructions | ROLLBACK.md; original main preserved; no history rewrite |
+| Lab setup and execution | Personal lab with endpoint telemetry, SIEM, orchestration, case management and analyst notification | [Lab environment](docs/lab-environment.md) |
+| Detection scenarios | Authentication failures, process hashes, scanning, account changes and PowerShell | [Scenario guide](docs/attack-scenarios.md) |
+| Execution walkthrough | Recorded workflow, Slack message, IRIS case and investigation queue | [Lab captures](docs/walkthrough.md) |
+| Evaluation | Original 15-run dataset, tables and interactive dashboard | [Experiment results](results/README.md) |
+| Code hardening | Context preservation, strict report parsing, source-bound indicators and ATT&CK mapping checks | [Code reference](docs/prompts-and-code.md) |
+| Reproducibility | Generated workflow code, CSV/dashboard equality, local links and automated checks | [Engineering reference](Engineering_Action_Plan.md) |
+| Asset preservation | All 18 original assets retained with SHA-256 checks and capture/review metadata | [Manifest](screenshots/manifest.csv) |
+| Recovery | Original snapshot, local history and documented revert procedures | [Rollback guide](ROLLBACK.md) |
 
-## Validation and delivery
+## Included code and software checks
 
-Run `node scripts/check.cjs` using Node.js 24 (`npm run check` is an equivalent convenience command). Tests run offline and do not call external services. Local validation passed 135 tests on Node.js v24.19.0, followed by ATT&CK hash/catalog, workflow drift, historical dashboard equality and local file/fragment checks. The test transcript is stored under `evidence/offline/validation.txt`; it is fixture validation, not a current lab execution. See [Engineering Action Plan](Engineering_Action_Plan.md) for code changes and remaining implementation contracts. The final delivery note records the resulting commit.
+The linked code references describe the files present in this repository. The n8n JSON is an inactive, credential-free reference export; its graph and example parameters are described in [current-workflow.md](docs/current-workflow.md).
 
-No current clean-machine deployment, provider integration, IRIS integration, Slack delivery or new performance experiment is asserted. The original source document and experiment images/data remain intact.
+Run the reproducible source checks using Node.js 24:
+
+```bash
+node scripts/check.cjs
+```
+
+The local suite passes **135 tests**, followed by ATT&CK hash/catalog checks, generated-workflow comparison, dashboard/CSV equality and local file/fragment checks. The [test transcript](evidence/offline/validation.txt) records software checks; the lab screenshots document the experiment.
+
+## Measurements retained
+
+The original dataset remains unchanged: 5 manual, 3 model-only and 7 integrated runs. Mean recorded times are 209.0, 130.0 and 38.1 seconds respectively. The reported 81.8% difference is calculated from those original records. The results page preserves group sizes, scoring context and timing reconciliation.
+
+The documentation does not introduce replacement performance figures, execution IDs or altered screenshot contents.

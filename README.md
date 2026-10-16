@@ -53,6 +53,8 @@ Runs 1, 3, 6 and 7 have timing discrepancies between `triage_time_s` and their s
 
 ## Evidence and assets
 
+**Owner requirement: do not delete or overwrite any existing image.** Add new captures or edited derivatives as separate files; see the [image preservation requirement](docs/asset-preservation.md).
+
 [screenshots/manifest.csv](screenshots/manifest.csv) records all retained assets, local SHA-256 hashes and known provenance gaps. Original images are preserved. Unknown capture dates, execution IDs and previous redactions remain explicitly unknown.
 
 The [historical walkthrough](docs/walkthrough.md) explains known differences between captures and code. A current evidence packet must link the source record and SID to the n8n execution, normalized alert, provider/tool results, IRIS IDs and Slack delivery outcome. Publish a separate sanitized copy when redaction is needed and record the exact redacted fields; retain the original privately. Never edit an image to imply a different execution or result.

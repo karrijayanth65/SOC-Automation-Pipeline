@@ -22,6 +22,6 @@ Baseline: `0f46773d53f53a3de78b937b56fb317c3977b317`. Local remediation date: 16
 
 ## Validation and delivery
 
-Run `node scripts/check.cjs` using Node.js 24 (`npm run check` is an equivalent convenience command). Tests run offline and do not call external services. Local validation passed 134 tests on Node.js v24.19.0, followed by ATT&CK hash/catalog, workflow drift, historical dashboard equality and local file/fragment checks. The test transcript is stored under `evidence/offline/validation.txt`; it is fixture validation, not a current lab execution. See [Engineering Action Plan](Engineering_Action_Plan.md) for code changes and remaining implementation contracts. The final delivery note records the resulting commit.
+Run `node scripts/check.cjs` using Node.js 24 (`npm run check` is an equivalent convenience command). Tests run offline and do not call external services. Local validation passed 135 tests on Node.js v24.19.0, followed by ATT&CK hash/catalog, workflow drift, historical dashboard equality and local file/fragment checks. The test transcript is stored under `evidence/offline/validation.txt`; it is fixture validation, not a current lab execution. See [Engineering Action Plan](Engineering_Action_Plan.md) for code changes and remaining implementation contracts. The final delivery note records the resulting commit.
 
 No current clean-machine deployment, provider integration, IRIS integration, Slack delivery or new performance experiment is asserted. The original source document and historical images/data remain intact.

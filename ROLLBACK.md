@@ -20,6 +20,16 @@ Git will stop if switching would overwrite uncommitted work. Preserve that work 
 
 ## Undo a published remediation commit
 
+This delivery is tagged `remediation/2026-10-16`; the preserved original is tagged `rollback/pre-remediation-2026-10-16`. To undo the whole delivery on a clean branch that contains it, use a new revert commit:
+
+```bash
+git fetch origin --tags
+git revert --no-commit rollback/pre-remediation-2026-10-16..remediation/2026-10-16
+git commit -m "Revert remediation delivery"
+```
+
+Review the resulting changes before pushing. If later work conflicts with this reversal, resolve it deliberately; do not force a reset. The image-preservation test is part of the delivered fix and does not modify any image.
+
 The delivered RESUBMISSION record identifies the changes. If you later publish the remediation, use a new revert commit on the target branch:
 
 ```bash

@@ -1,6 +1,8 @@
 # Splunk Detection Rules
 
-Five saved alerts configured in Splunk Enterprise under the `chris-project` index. All alerts are set to trigger a webhook to n8n when conditions are met. Screenshots of the alert list are in the `screenshots/` folder.
+These five saved alerts turn Windows and Sysmon events into investigation leads: repeated failures, executable hashes, service probing, account changes and PowerShell activity. Read each rule together with the fields it passes downstream and the question an analyst should investigate.
+
+The recorded Splunk configuration uses the `chris-project` index and webhook delivery to n8n. Interface captures are in `screenshots/`.
 
 [Home](../README.md) · [Current input contract](validated-inputs.md) · [Scenarios](../docs/attack-scenarios.md)
 

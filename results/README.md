@@ -2,7 +2,9 @@
 
 [Home](../README.md) · [Raw CSV](evaluation-results.csv) · [Interactive dashboard](dashboard.html) · [Scenarios](../docs/attack-scenarios.md)
 
-This directory preserves the 15 recorded lab runs and provides a reproducible view of their timings, quality scores and analyst steps. Download the repository and open `results/dashboard.html` in a browser for the interactive tables and charts.
+This evaluation examines whether model assistance and intelligence enrichment make triage faster and give the analyst more useful context. Its 15 recorded runs let you compare time, action quality, context quality and analyst effort across three approaches.
+
+Start with the overall comparison, then inspect individual scenarios and raw rows. Download the repository and open `results/dashboard.html` to filter the records and explore the charts.
 
 ## Method
 
@@ -24,7 +26,9 @@ One evaluator assigned the recorded qualitative scores. Analyst steps count disc
 
 ## Overall results
 
-These values are computed from the unchanged CSV, using each mode's available rows.
+Integrated triage has the lowest recorded mean time and the highest mean context score. Model-only analysis is faster than manual review in these records but has a lower mean context score. That is why the comparison includes quality and effort alongside speed.
+
+The values below are calculated from each mode's available CSV rows.
 
 | Mode | Runs | Mean triage time | Action / 5 | Context / 5 | Analyst steps |
 |---|---|---|---|---|---|

@@ -2,7 +2,9 @@
 
 [Home](../README.md) · [Detection rules](../splunk/detection-rules.md) · [Results](../results/README.md)
 
-Five controlled scenarios exercise authentication, process execution, network activity, account changes and PowerShell telemetry. The recorded environment uses a Windows endpoint and a Kali test machine on a private VMware network.
+These five scenarios test different kinds of analyst reasoning: identify the account behind failed logons, understand an executable, interpret network activity, review privilege changes and explain a command line. Each section connects the event evidence to the context an analyst needs next.
+
+The recorded environment uses a Windows endpoint and a Kali test machine on a private VMware network. The coverage table at the end shows exactly which configurations were recorded for each scenario.
 
 ## 1. Authentication failures
 

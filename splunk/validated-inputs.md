@@ -2,6 +2,8 @@
 
 [Home](../README.md) · [Setup](../docs/lab-environment.md) · [Walkthrough](../docs/walkthrough.md)
 
+Good triage starts with a clear alert. Use this guide to send the right host, account, indicator and event time into the workflow. The field contract makes an alert traceable, while the five query examples show how to turn raw events into a focused investigation starting point.
+
 ## Alert contract
 
 The webhook body contains `search_name`, a stable Splunk `sid` and one `result` object. Use the source event time as epoch seconds or ISO 8601 with a timezone. The normalizer prefers `Raw_Splunk_time`, then `_time`; it rejects missing or ambiguous timestamps rather than substituting the current time.

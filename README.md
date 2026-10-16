@@ -1,45 +1,31 @@
 # SOC Automation Pipeline
 
-AI-assisted security operations: telemetry, enrichment, case management and analyst notification.
+Evaluating how AI and threat intelligence change the speed and usefulness of SOC triage.
 
 `Splunk → n8n → GPT-4.1 Mini + AbuseIPDB / VirusTotal → DFIR-IRIS → Slack`
 
-A five-machine lab connects Windows events and Sysmon telemetry to structured triage and an investigation handoff. This repository brings the workflow, five detection scenarios, 15 recorded evaluation runs, screenshots and setup notes into one place.
+An analyst investigating an alert has to connect log evidence, indicator reputation, severity and recommended next steps. Repeating those lookups and copying context between tools takes time.
+
+This lab brings that work into one pipeline and compares three ways to perform it: manual investigation, model-assisted analysis, and model analysis with threat intelligence enrichment. Five scenarios and 15 recorded runs show the trade-offs in triage time, context quality and analyst effort.
 
 [Setup](docs/lab-environment.md) · [Detection rules](splunk/detection-rules.md) · [Scenarios](docs/attack-scenarios.md) · [Results](results/README.md) · [Dashboard](results/dashboard.html) · [Prompts and code](docs/prompts-and-code.md)
 
-## Pipeline architecture
+## What makes this project useful
 
-![Six-stage alert-to-case architecture](screenshots/pipeline.svg)
+The project connects an operational workflow to a measurable comparison. Readers can inspect both the handoff between tools and the records behind the results.
 
-Authenticated intake, source normalization and output validation keep the original alert traceable through model analysis and the case handoff.
-
-### Investigation lifecycle
-
-![Investigation lifecycle from alert to case closure](screenshots/incident-response-workflow.png)
-
-The lifecycle includes analyst-led evidence collection, response decisions and closure. Response recommendations in the workflow require analyst action.
-
-### Component architecture
-
-![Component architecture showing telemetry, SIEM, orchestration, model tools, IRIS and Slack](screenshots/architecture-diagram.png)
-
-## What the pipeline includes
-
-| Capability | Implementation |
+| Added value | What you can inspect |
 |---|---|
-| Five alert inputs | Authentication, hash, scanning, account change and PowerShell webhooks |
-| Intelligence enrichment | AbuseIPDB IP reputation; VirusTotal IP and SHA-256 lookups |
-| Structured triage | Validated summary, scores, recommendations, source-bound indicators and MITRE suggestions |
-| Case management | IRIS alert creation followed by case escalation |
-| Investigation context | Original SID/time, indicator detail, detection tags and classification defaults |
-| Analyst notification | Formatted Slack output for the High/Critical branch |
-| Evaluation | Raw 15-run CSV, methodology, radar, interactive charts and comparison tables |
-| Reproducibility | Configuration inventory, readable node code and offline tests |
+| A comparison that separates model assistance from enrichment | Manual, model-only and integrated results, with raw rows and scoring definitions |
+| Context carried into the investigation | Source events, indicator lookups, structured summaries, case tags and analyst notifications |
+| Checks around automated handoffs | Authenticated webhooks, source-bound indicators, schema validation and 67 offline tests |
+| A path from explanation to reproduction | Architecture, five SPL detections, configuration notes, readable code and an interactive results dashboard |
 
-## Recorded evaluation
+## Results at a glance
 
-The 15-run dataset compares three configurations. Averages below are calculated from the recorded rows.
+In the recorded lab data, integrated triage averaged **38.1 seconds versus 209 seconds manually**, a reduction of approximately **82%**. Its mean context score was **4.29/5**, compared with **3.60/5** manually and **3.00/5** for model-only analysis.
+
+That combination matters: a useful handoff needs investigation context as well as a short turnaround. The groups have different scenario coverage and run counts, which are retained below and explained in the [evaluation method](results/README.md#method).
 
 | Metric | A: Manual | B: AI without tools | C: AI with enrichment |
 |---|---|---|---|
@@ -52,11 +38,32 @@ The 15-run dataset compares three configurations. Averages below are calculated 
 
 ![Recorded radar comparing speed, action quality, context quality, efficiency and reported accuracy](screenshots/pipeline-comparison-radar.png)
 
-[Raw records and reconciliation](results/README.md) · [Interactive analysis](results/dashboard.html).
+[Explore the records and calculations](results/README.md) · [Use the interactive dashboard](results/dashboard.html).
 
-The preserved radar uses the recorded evaluation's original scales. The CSV supports the time, quality and step calculations; accuracy has no per-run column. The results page explains the difference between the earlier prose's 3.6 integrated steps and the CSV mean of 3.9, plus four timing mismatches.
+The radar retains the recorded evaluation's scales. The CSV supports the time, quality and step calculations; accuracy has no per-run column. Reconciliation notes explain four timing mismatches and the integrated step mean of 3.9.
 
-## Pipeline in action
+## How the pipeline works
+
+![Six-stage alert-to-case architecture](screenshots/pipeline.svg)
+
+Authenticated intake, source normalization and output validation keep the original alert traceable through model analysis and the case handoff.
+
+### What each stage contributes
+
+| Capability | Implementation |
+|---|---|
+| Five alert inputs | Authentication, hash, scanning, account change and PowerShell webhooks |
+| Intelligence enrichment | AbuseIPDB IP reputation; VirusTotal IP and SHA-256 lookups |
+| Structured triage | Validated summary, scores, recommendations, source-bound indicators and MITRE suggestions |
+| Case management | IRIS alert creation followed by case escalation |
+| Investigation context | Original SID/time, indicator detail, detection tags and classification defaults |
+| Analyst notification | Formatted Slack output for the High/Critical branch |
+| Evaluation | Raw 15-run CSV, methodology, radar, interactive charts and comparison tables |
+| Reproducibility | Configuration inventory, readable node code and offline tests |
+
+## Follow an alert from detection to handoff
+
+These views connect the architecture to the information an analyst receives: one workflow, one notification, a case record and a queue for prioritizing investigations.
 
 ### n8n workflow
 
@@ -84,6 +91,8 @@ The queue groups investigations with severity, source and indicator tags.
 
 ## Lab environment
 
+Five virtual machines separate the endpoint, detection, orchestration, case management and test roles. This makes the path from a Windows event to an analyst-facing case easier to follow and troubleshoot.
+
 | Machine | Recorded OS | Role | Address |
 |---|---|---|---|
 | Windows client | Windows 10 Pro | Endpoint telemetry and test target | 192.168.106.128 |
@@ -100,6 +109,16 @@ The queue groups investigations with severity, source and indicator tags.
 
 The private lab segment contains scenario traffic. Model, intelligence and messaging APIs require controlled egress. [Lab setup and communication paths](docs/lab-environment.md).
 
+### Investigation lifecycle
+
+![Investigation lifecycle from alert to case closure](screenshots/incident-response-workflow.png)
+
+The handoff supports a wider investigation: the analyst reviews evidence, chooses response actions and records closure.
+
+### Component architecture
+
+![Component architecture showing telemetry, SIEM, orchestration, model tools, IRIS and Slack](screenshots/architecture-diagram.png)
+
 ## Three pipeline configurations
 
 **A — Manual:** review Splunk, look up indicators, assess the alert and document the investigation manually.
@@ -111,6 +130,8 @@ The private lab segment contains scenario traffic. Model, intelligence and messa
 The recorded model-only group covers three scenarios; manual and integrated groups cover all five. The [evaluation coverage table](docs/attack-scenarios.md#recorded-evaluation-coverage) gives the actual run counts.
 
 ## Attack scenarios
+
+The scenarios exercise different investigation needs: account context, executable reputation, network activity, privilege changes and command-line intent. Together they show where external intelligence can add context and where local event evidence remains central.
 
 | Scenario | Detection telemetry | Input route |
 |---|---|---|
@@ -138,9 +159,11 @@ The recorded model-only group covers three scenarios; manual and integrated grou
 
 ![Sysmon process-creation events in Windows Event Viewer](screenshots/sysmon-event-viewer.png)
 
-## Reading the results
+## What the comparison tells an analyst
 
-Enrichment supplies external indicator context beyond the alert text. The integrated records combine shorter triage times with higher recorded context scores. Model-only runs have fewer steps partly because they omit intelligence lookups.
+Model-only analysis reduced the recorded mean triage time from 209 to 130 seconds, but its mean context score was lower than manual review. The integrated records combine the shortest mean time with the highest context score. This supports examining the entire handoff: the data available to the analyst, the lookups performed and the quality of the resulting case.
+
+Fewer steps also need interpretation. Model-only runs omit intelligence lookups, so a smaller step count can reflect work that was skipped. Speed, context and effort should be read together.
 
 The experiment has unequal scenario coverage, few repetitions, manual timing and single-evaluator quality scores. Treat its averages as a description of those records. [Methodology, scoring and limitations](results/README.md).
 
@@ -170,6 +193,8 @@ For the interactive charts, download the complete repository and open `results/d
 These are porting options; the included export targets n8n and the documented services.
 
 ## Repository structure
+
+The folders follow the investigation journey: understand the setup in `docs/`, inspect detections in `splunk/`, follow execution in `workflows/`, and review outcomes in `results/`. Screenshots show the recorded interface views; tests cover the deployment code.
 
 ```text
 SOC-Automation-Pipeline/

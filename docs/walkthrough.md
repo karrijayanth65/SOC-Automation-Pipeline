@@ -2,6 +2,8 @@
 
 [Home](../README.md) · [Setup](lab-environment.md) · [Detections](../splunk/validated-inputs.md)
 
+Follow the alert from orchestration to the case and analyst notification. The purpose of the handoff is to deliver the source event, relevant context and next review steps together, so the analyst can continue the investigation without reconstructing the alert from several tools.
+
 ## Workflow canvas
 
 ![n8n workflow canvas](../screenshots/workflow-canvas.png)
@@ -12,13 +14,13 @@ Five alert types converge on a shared analysis path. The current export adds nor
 
 ![DFIR-IRIS case view](../screenshots/dfir-iris-case.png)
 
-IRIS provides a place to retain the original alert and analyst-facing summary. The formatter carries the original source SID and event timestamp into its alert payload and tags the model advisory for review.
+The case keeps the alert and its interpretation in one investigation record. The formatter carries the original source SID and event timestamp into the payload, making it possible to check the summary against the source event and track the handoff.
 
 ## Analyst notification
 
 ![Slack alert detail](../screenshots/slack-notification.png)
 
-The High/Critical branch sends a concise Slack message after case escalation. Lower scores still reach IRIS but do not take that Slack branch. Model recommendations are text for analyst review, not executed response commands.
+The High/Critical branch brings higher-priority cases to the analyst after escalation. Lower scores still reach IRIS but do not take that Slack branch. The message supplies context and recommended review steps; the analyst chooses the response.
 
 ## A reproducible local check
 

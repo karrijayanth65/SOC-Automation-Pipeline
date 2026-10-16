@@ -2,9 +2,9 @@
 
 [Home](../README.md) · [Setup](lab-environment.md) · [Workflow](../workflows/pipeline-c.json)
 
-This page contains the exact current prompt and readable Code-node sources. The export embeds the same JavaScript; the offline suite checks that they stay aligned.
+Use this page to understand how the workflow turns an alert into a reviewable case: which judgments the model supplies, which checks the code enforces, and which original fields stay attached to the event. The exact current prompt and readable Code-node sources are included below; the offline suite checks that the embedded code stays aligned.
 
-## Workflow flow
+## How information moves
 
 Five authenticated webhooks → Normalize alert → model with three optional tools → report formatter → IRIS alert → IRIS case → severity branch → Slack.
 

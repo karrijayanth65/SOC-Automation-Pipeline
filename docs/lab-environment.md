@@ -2,6 +2,8 @@
 
 [Home](../README.md) · [Detections](../splunk/validated-inputs.md) · [Walkthrough](walkthrough.md)
 
+Use this guide to understand where each service runs, how an alert moves between services, and what must be configured to reproduce the handoff. The separation of endpoint, SIEM, orchestration and case-management roles also gives you clear places to investigate a delivery failure.
+
 ## Recorded lab layout
 
 | Machine | Recorded OS | Role | Address | RAM | Disk |

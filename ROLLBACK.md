@@ -30,6 +30,8 @@ git commit -m "Revert remediation delivery"
 
 Review the resulting changes before pushing. If later work conflicts with this reversal, resolve it deliberately; do not force a reset. The image-preservation test is part of the delivered fix and does not modify any image.
 
+Publication also integrates the owner's separate `.gitignore` and license edits from GitHub. To reverse only the three remediation commits while retaining those separate changes, use `git revert --no-commit 3695eca dce8852 a7ce9ba`, review the result, then commit it. The publication repair retains the original upstream copyright notice alongside Jayanth K; attribution is not a runtime project label.
+
 The delivered RESUBMISSION record identifies the changes. If you later publish the remediation, use a new revert commit on the target branch:
 
 ```bash

@@ -36,11 +36,11 @@ That combination matters: a useful handoff needs investigation context as well a
 | Context quality / 5 | 3.60 | 3.00 | 4.29 |
 | Average analyst steps | 6.6 | 3.0 | 3.9 |
 
-![Recorded radar comparing speed, action quality, context quality, efficiency and reported accuracy](screenshots/pipeline-comparison-radar.png)
+![Comparison of recorded lab averages: enriched AI triage takes 38.1 seconds versus 209 seconds manually, with higher action and context scores](screenshots/triage-comparison.png)
 
 [Explore the records and calculations](results/README.md) · [Use the interactive dashboard](results/dashboard.html).
 
-The radar retains the recorded evaluation's scales. The CSV supports the time, quality and step calculations; accuracy has no per-run column. Reconciliation notes explain four timing mismatches and the integrated step mean of 3.9.
+The comparison graphic uses CSV-derived averages; the original radar is preserved in the results documentation. Reconciliation notes explain four timing mismatches and the integrated step mean of 3.9.
 
 ## How the pipeline works
 
@@ -220,6 +220,7 @@ SOC-Automation-Pipeline/
 │   ├── architecture-diagram.png
 │   ├── incident-response-workflow.png
 │   ├── pipeline-comparison-radar.png
+│   ├── triage-comparison.png
 │   ├── workflow-canvas.png
 │   ├── slack-notification.png
 │   ├── dfir-iris-case.png

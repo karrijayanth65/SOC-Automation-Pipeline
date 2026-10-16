@@ -47,7 +47,7 @@ The radar uses a higher-is-better 0–100 index, with [formulas and source disti
 
 ## How the pipeline works
 
-![Six-stage alert-to-case architecture](screenshots/pipeline.svg)
+![Six-stage SOC automation pipeline: receive, normalize, analyze and enrich, validate, create case and notify analyst](screenshots/pipeline-canva.png)
 
 Authenticated intake, source normalization and output validation keep the original alert traceable through model analysis and the case handoff.
 
@@ -220,6 +220,7 @@ SOC-Automation-Pipeline/
 │   └── dashboard.js
 ├── screenshots/
 │   ├── pipeline.svg
+│   ├── pipeline-canva.png
 │   ├── architecture-diagram.png
 │   ├── incident-response-workflow.png
 │   ├── pipeline-comparison-radar.png
@@ -258,6 +259,6 @@ Jayanth K describes this as shared lab work completed alongside Christopher Andr
 
 The screenshots, diagrams and raw CSV retain the recorded identities, IP addresses, timestamps and technical values. They document the historical setup and can differ from the hardened deployment export. Jayanth K's publication includes revised documentation, input/output validation, offline tests, the icon-based architecture and the local interactive dashboard.
 
-The recorded lab evaluation and this publication update are separate activities. This update checked files, links, data calculations and offline code behavior; it did not repeat a live Splunk/n8n/IRIS integration run. The CSV remains unchanged, and reconciliation notes identify differences from the earlier published aggregates. The illustrative SVG and synthetic test fixture explain the deployment version.
+The recorded lab evaluation and this publication update are separate activities. This update checked files, links, data calculations and offline code behavior; it did not repeat a live Splunk/n8n/IRIS integration run. The CSV remains unchanged, and reconciliation notes identify differences from the earlier published aggregates. The architecture illustrations and synthetic test fixture explain the deployment version.
 
 Documentation updated 16 October 2026.

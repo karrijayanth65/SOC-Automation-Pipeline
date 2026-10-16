@@ -38,7 +38,10 @@ The values below are calculated from each mode's available CSV rows.
 
 Relative to the manual average, the recorded model-only time is 37.8% lower and the integrated time is 81.8% lower. These are descriptive comparisons across differently sized groups, not causal or production estimates.
 
-![Five-axis outline-only radar comparing AI Full, AI No Tools and Manual on higher-is-better indices](../screenshots/triage-comparison.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../screenshots/triage-comparison-dark.png">
+  <img src="../screenshots/triage-comparison.png" alt="Five-axis outline-only radar comparing AI Full, AI No Tools and Manual on higher-is-better indices">
+</picture>
 
 ### Radar chart scales
 

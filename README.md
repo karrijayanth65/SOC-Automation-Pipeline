@@ -36,7 +36,10 @@ That combination matters: a useful handoff needs investigation context as well a
 | Context quality / 5 | 3.60 | 3.00 | 4.29 |
 | Average analyst steps | 6.6 | 3.0 | 3.9 |
 
-![Outline-only radar comparing AI Full, AI No Tools and Manual across speed, action quality, context quality, efficiency and reported accuracy](screenshots/triage-comparison.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="screenshots/triage-comparison-dark.png">
+  <img src="screenshots/triage-comparison.png" alt="Outline-only radar comparing AI Full, AI No Tools and Manual across speed, action quality, context quality, efficiency and reported accuracy">
+</picture>
 
 [Explore the records and calculations](results/README.md) · [Use the interactive dashboard](results/dashboard.html).
 
@@ -221,6 +224,7 @@ SOC-Automation-Pipeline/
 │   ├── incident-response-workflow.png
 │   ├── pipeline-comparison-radar.png
 │   ├── triage-comparison.png
+│   ├── triage-comparison-dark.png
 │   ├── workflow-canvas.png
 │   ├── slack-notification.png
 │   ├── dfir-iris-case.png

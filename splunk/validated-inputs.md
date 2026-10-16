@@ -10,12 +10,12 @@ The webhook body contains `search_name`, a stable Splunk `sid` and one `result` 
 
 Required host identity can arrive as `host`, `ComputerName` or `Computer`. Useful fields include `user`, `target_account`, `initiating_user`, `src_ip`, `dst_ip`, `count`, `drops`, `ports`, `Image`, `CommandLine`, `ParentImage`, `flags`, `sha256`, `attack_type` and `mitre_technique`. Unknown fields are dropped. Keep one alert result per webhook request; handle multi-row saved-search output explicitly in the sending action.
 
-The examples below use a `jayanth_k` index for the Jayanth K project and normalized Windows/Sysmon fields. Adapt those fields to your installed add-on and actual raw records. Use narrow time windows and aggregate alerts to avoid one model call per raw event.
+The examples below use a `jayanth-project` index for the Jayanth K project and normalized Windows/Sysmon fields. Adapt those fields to your installed add-on and actual raw records. Use narrow time windows and aggregate alerts to avoid one model call per raw event.
 
 ## Authentication failures → IP
 
 ```spl
-index="jayanth_k" earliest=-5m EventCode=4625
+index=jayanth-project earliest=-5m EventCode=4625
 | eval user=coalesce(TargetUserName,Account_Name,user)
 | eval src_ip=coalesce(IpAddress,Source_Network_Address,src_ip)
 | stats count latest(_time) as _time by host user src_ip
@@ -29,7 +29,7 @@ Three failures are a training threshold, not proof of brute force. Check lockout
 ## Process hash → Hash
 
 ```spl
-index="jayanth_k" earliest=-5m source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" (EventCode=1 OR EventID=1)
+index=jayanth-project earliest=-5m source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" (EventCode=1 OR EventID=1)
 | rex field=Hashes "SHA256=(?<sha256>[A-Fa-f0-9]{64})"
 | where isnotnull(sha256)
 | stats latest(_time) as _time values(Image) as Image by host sha256
@@ -41,7 +41,7 @@ A captured process hash is an enrichment candidate, not a malicious-file verdict
 ## Firewall drops → Scan
 
 ```spl
-index="jayanth_k" earliest=-5m sourcetype=windows_firewall "DROP"
+index=jayanth-project earliest=-5m sourcetype=windows_firewall "DROP"
 | rex field=_raw "DROP\s+\w+\s+(?<src_ip>\d{1,3}(?:\.\d{1,3}){3})\s+(?<dst_ip>\d{1,3}(?:\.\d{1,3}){3})\s+\d+\s+(?<dst_port>\d+)"
 | where isnotnull(src_ip) AND isnotnull(dst_ip)
 | search dst_port IN (135,139,445,3389,5985,5986)
@@ -55,7 +55,7 @@ This parser expects a Windows Firewall text-log layout. Verify `host` identifies
 ## Account changes → Admin
 
 ```spl
-index="jayanth_k" earliest=-5m (EventCode=4720 OR EventCode=4732)
+index=jayanth-project earliest=-5m (EventCode=4720 OR EventCode=4732)
 | where EventCode=4720 OR (EventCode=4732 AND TargetSid="S-1-5-32-544")
 | eval target_account=if(EventCode=4732,coalesce(MemberName,MemberSid),coalesce(TargetUserName,Account_Name))
 | eval initiating_user=coalesce(SubjectUserName,user)
@@ -68,7 +68,7 @@ The Administrators SID avoids relying on a localized group name, but confirm you
 ## PowerShell execution → PowerShell
 
 ```spl
-index="jayanth_k" earliest=-5m source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" (EventCode=1 OR EventID=1)
+index=jayanth-project earliest=-5m source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" (EventCode=1 OR EventID=1)
 | eval image_lc=lower(Image), cmd_lc=lower(CommandLine)
 | where match(image_lc,"(powershell|pwsh)\.exe$")
 | where match(cmd_lc,"-enc(odedcommand)?\b|invoke-expression|frombase64string|-windowstyle\s+hidden")

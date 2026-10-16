@@ -14,7 +14,7 @@ The capture shows `Set link`; the current export uses `Normalize alert`. Use the
 
 ![Historical DFIR-IRIS case; not a current execution](../screenshots/dfir-iris-case.png)
 
-The guide identifies historical `Chris-Project` identities. They must not be relabeled as a new run. The current formatter prepares a source SID and timestamp, but a payload fixture cannot establish that IRIS accepted it or created native assets/IOCs.
+The guide identifies historical account and customer identities. They must not be relabeled as a new run. The current formatter prepares a source SID and timestamp, but a payload fixture cannot establish that IRIS accepted it or created native assets/IOCs.
 
 ## Historical analyst notification
 

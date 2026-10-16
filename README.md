@@ -161,7 +161,7 @@ See [RESUBMISSION.md](RESUBMISSION.md) for the full fix/evidence mapping. No nod
 
 ## Credits and lab context
 
-Based on Christopher Andrews's [LARA SOC Automation](https://github.com/C-Andr3ws/lara-soc-automation/tree/41866043d4581ed85d4e921d26bb5e42625af299), source commit `41866043d4581ed85d4e921d26bb5e42625af299`. Existing copyright and permission notices remain in [LICENSE](LICENSE).
+Based on the [upstream source snapshot](https://github.com/C-Andr3ws/lara-soc-automation/tree/41866043d4581ed85d4e921d26bb5e42625af299), source commit `41866043d4581ed85d4e921d26bb5e42625af299`. Existing copyright and permission notices remain in [LICENSE](LICENSE).
 
 The screenshots and evaluation are retained historical material. This revision includes AI-assisted code and documentation changes; historical results do not validate the revised export. Personal lab participation remains unverified without supporting tasks, dates and execution artifacts.
 

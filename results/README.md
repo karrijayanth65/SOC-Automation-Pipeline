@@ -2,7 +2,7 @@
 
 [Home](../README.md) · [Raw CSV](evaluation-results.csv) · [Interactive dashboard](dashboard.html) · [Scenarios](../docs/attack-scenarios.md)
 
-These 15 CSV rows are inherited historical observations. The supplied remediation guide reports a byte-for-byte match to Christopher Andrews's LARA source commit `41866043d4581ed85d4e921d26bb5e42625af299`; the comparison has not been independently repeated in this remediation. See [credits and lab context](../README.md#credits-and-lab-context).
+These 15 CSV rows are inherited historical observations. The supplied remediation guide reports a byte-for-byte match to the upstream source commit `41866043d4581ed85d4e921d26bb5e42625af299`; the comparison has not been independently repeated in this remediation. See [credits and lab context](../README.md#credits-and-lab-context).
 
 No current execution packet links these rows to the revised workflow. The [dashboard](dashboard.html) computes descriptions of the retained historical rows; it is not a current benchmark.
 

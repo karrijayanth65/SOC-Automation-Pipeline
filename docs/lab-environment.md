@@ -1,6 +1,33 @@
-# Setup
+# Lab Environment
 
-[Home](README.md) · [Detections](DETECTIONS.md) · [Walkthrough](WALKTHROUGH.md)
+[Home](../README.md) · [Detections](../splunk/validated-inputs.md) · [Walkthrough](walkthrough.md)
+
+## Recorded lab layout
+
+| Machine | Recorded OS | Role | Address | RAM | Disk |
+|---|---|---|---|---|---|
+| Windows client | Windows 10 Pro | Endpoint and test target | 192.168.106.128 | 4 GB | 60 GB |
+| Splunk | Ubuntu 24.04 | Search and alerts | 192.168.106.129 | 4 GB | 60 GB |
+| n8n | Ubuntu 24.04 | Orchestration | 192.168.106.130 | 4 GB | 40 GB |
+| DFIR-IRIS | Ubuntu 24.04 | Case management | 192.168.106.131 | 4 GB | 40 GB |
+| Kali | Rolling release | Authorized test traffic | 192.168.106.133 | 2 GB | 40 GB |
+
+![Recorded lab network topology](../screenshots/lab-network-topology.png)
+
+The listed allocations total 18 GB of guest RAM and 240 GB of virtual disk before host overhead. Size the physical machine for those allocations plus the host OS rather than treating a 16 GB host as sufficient for every guest at once.
+
+The illustrated VMnet8 network is NAT, with a private subnet of `192.168.106.0/24`. Static addressing keeps lab endpoints stable. NAT permits egress; external model, intelligence and messaging calls need controlled network access.
+
+| From | To | Purpose |
+|---|---|---|
+| Windows forwarder | Splunk TCP 9997 | Ship Windows and Sysmon telemetry |
+| Splunk | n8n webhook | Deliver an authenticated alert |
+| n8n | OpenAI, AbuseIPDB, VirusTotal HTTPS | Model analysis and indicator lookups |
+| n8n | DFIR-IRIS HTTPS | Add alert, then escalate to case |
+| n8n | Slack HTTPS | Notify the configured analyst channel |
+| Kali | Lab Windows endpoint | Authorized scenario traffic |
+
+Use [env.example](../env.example) as a local configuration inventory. n8n credentials must be bound in its credential manager; the export does not automatically consume that file.
 
 ## Components and boundaries
 
@@ -10,7 +37,7 @@ Keep attack simulation traffic on the private lab network. The orchestration ser
 
 ## 1. Import and configure
 
-Import [soc-pipeline.json](workflows/soc-pipeline.json) through n8n's workflow import menu. Leave it inactive while binding credentials and reviewing settings. Export/import behavior is described in the [n8n documentation](https://docs.n8n.io/workflows/export-import/).
+Import [pipeline-c.json](../workflows/pipeline-c.json) through n8n's workflow import menu. Leave it inactive while binding credentials and reviewing settings. Export/import behavior is described in the [n8n documentation](https://docs.n8n.io/workflows/export-import/).
 
 | Node | Required configuration |
 |---|---|
@@ -21,13 +48,13 @@ Import [soc-pipeline.json](workflows/soc-pipeline.json) through n8n's workflow i
 | DFIR-IRIS HTTP Request / DFIR-IRIS HTTP Request1 | Bearer Auth credential; replace `https://iris.example.invalid` with your trusted IRIS URL |
 | Send a message | Slack credential and actual channel ID in place of `REPLACE_WITH_CHANNEL_ID` |
 
-The IRIS formatter uses example IDs: customer `1`, classification `36`, status `1`, severities Low `2`, Medium `4`, High `5`, Critical `6`. Verify each against your deployment. Change [format-report.js](workflows/format-report.js) and the embedded Code node together; the offline suite detects drift between them.
+The IRIS formatter uses example IDs: customer `1`, status `1`, severities Low `2`, Medium `4`, High `5`, Critical `6`. Detection-specific classification defaults are authentication `15`, hash `7`, scan `11`, account change `17`, PowerShell `21`, otherwise `36`. Verify each against your deployment. Change [format-report.js](../workflows/format-report.js) and the embedded Code node together; the offline suite detects drift between them.
 
 TLS certificate validation is enabled. Install a trusted certificate/CA instead of ignoring certificate errors. The IRIS API paths are `/alerts/add` and `/alerts/escalate/{alert_id}`; confirm request fields, permission scope and response shapes (`data.alert_id`, then `data.case_id`) against your deployed IRIS API before use.
 
 ## 2. Connect Splunk
 
-Use the [detection field contract](DETECTIONS.md). n8n exposes these five POST paths:
+Use the [detection field contract](../splunk/validated-inputs.md). n8n exposes these five POST paths:
 
 ```text
 soc-reboot-ip
@@ -39,7 +66,7 @@ soc-reboot-admin
 
 Copy the actual test/production URL from each Webhook node; do not assume the reverse proxy or base path. Webhook paths are instance-wide, so check for collisions before activation.
 
-Send the JSON body in [example-alert.json](tests/example-alert.json), replacing fixture values with your approved test alert. n8n wraps an HTTP request's JSON under `body`; do not add another `body` wrapper when sending that file. Preserve `search_name`, a stable `sid`, source host and event timestamp.
+Send the JSON body in [example-alert.json](../tests/example-alert.json), replacing fixture values with your approved test alert. n8n wraps an HTTP request's JSON under `body`; do not add another `body` wrapper when sending that file. Preserve `search_name`, a stable `sid`, source host and event timestamp.
 
 The sender must supply the configured authentication header. If your native Splunk alert action cannot set a custom header, use a reviewed custom alert action or restricted relay that can; do not disable webhook authentication to make it connect. Apply sender restrictions and TLS at the gateway. See [n8n Webhook authentication](https://docs.n8n.io/integrations/builtin/credentials/webhook/).
 

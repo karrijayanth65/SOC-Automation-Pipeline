@@ -1,2 +1,3 @@
 * text=auto eol=lf
+results/evaluation-results.csv -text whitespace=trailing-space,space-before-tab,cr-at-eol
 *.png binary

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Interactive analysis of 15 recorded SOC automation lab runs.">
+  <title>SOC Pipeline · Evaluation Dashboard</title>
+  <style>
+    :root{color-scheme:light;--ink:#213946;--muted:#586d78;--line:#d8e2e7;--green:#27866d;--amber:#a56d16;--red:#ba5259}
+    *{box-sizing:border-box}body{margin:0;background:#f4f7f9;color:var(--ink);font:15px/1.6 system-ui,"Segoe UI",sans-serif}
+    main{max-width:1300px;margin:auto;padding:32px 28px}h1{font-size:34px;line-height:1.15;letter-spacing:-.035em;margin:12px 0}h2{font-size:21px;margin:0 0 12px}h3{font-size:15px;margin:0 0 12px}
+    p{margin:8px 0 16px}a{color:#276a77;text-underline-offset:3px}.muted,small{color:var(--muted)}.eyebrow{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#397780;font-weight:700}
+    nav{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;margin-bottom:24px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+    .card,section{border:1px solid var(--line);background:#fff;border-radius:12px;padding:22px}.card strong{font-size:30px;display:block;letter-spacing:-.03em}.card span{font-size:13px;color:var(--muted)}
+    section{margin-bottom:20px;scroll-margin-top:20px}.filters{display:flex;align-items:end;gap:18px;flex-wrap:wrap;margin:18px 0}.filters label{font-size:13px;display:grid;gap:5px}
+    select,button{padding:9px 12px;font:inherit;color:var(--ink);border:1px solid #aabdc7;border-radius:6px;background:white}button{cursor:pointer}button:hover{background:#f0f6f7}
+    :focus-visible{outline:3px solid #397780;outline-offset:3px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}.scroll{overflow:auto}
+    table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+    th{background:#f0f5f7;color:#3f5c6b}caption{text-align:left;color:var(--muted);padding-bottom:10px}td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+    .chart svg{display:block;width:100%;height:auto}.chart p{font-size:13px;color:var(--muted)}.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;margin:10px 0}
+    .dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}.warn{background:#fff7e8}.label{padding:2px 6px;background:#eef4f5;border-radius:4px;white-space:nowrap}
+    figure{margin:18px 0}figure img{max-width:100%;height:auto}figcaption{font-size:13px;color:var(--muted)}footer{font-size:13px;color:var(--muted);padding:10px 0 24px}
+    details{border-top:1px solid var(--line);padding:12px 0}summary{cursor:pointer;font-weight:650}code{background:#eef3f5;padding:1px 4px;border-radius:3px}
+    @media(max-width:760px){main{padding:24px 16px}.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}section{padding:18px}h1{font-size:28px}}
+    @media print{body{background:white}main{padding:0}.filters,button{display:none}.cards,section{break-inside:avoid}.scroll{overflow:visible}}
+  </style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">SOC Automation Pipeline / Results</p>
+  <h1>From raw runs to a clear comparison.</h1>
+  <p class="muted">Explore recorded triage times, action quality, context quality and analyst steps across three pipeline configurations.</p>
+  <nav aria-label="Evaluation navigation"><a href="../README.md">Project</a><a href="README.md">Method and reconciliation</a><a href="evaluation-results.csv" download>Download CSV</a><a href="#records">All records</a></nav>
+  <div class="cards" id="metrics" aria-live="polite"></div>
+  <section aria-labelledby="selection">
+    <h2 id="selection">Choose the comparison</h2>
+    <div class="filters">
+      <label>Pipeline<select id="mode"><option value="">All configurations</option><option value="A">A · Manual</option><option value="B">B · AI without tools</option><option value="C">C · AI with enrichment</option></select></label>
+      <label>Scenario<select id="scenario"><option value="">All scenarios</option></select></label>
+      <button id="reset" type="button">Reset filters</button>
+    </div>
+    <p id="selection-note" class="muted" aria-live="polite"></p>
+    <div class="legend"><span><i class="dot" style="background:var(--green)"></i>C · Integrated</span><span><i class="dot" style="background:var(--amber)"></i>B · Model only</span><span><i class="dot" style="background:var(--red)"></i>A · Manual</span></div>
+    <div class="grid"><div id="time-chart" class="chart"></div><div id="quality-chart" class="chart"></div></div>
+  </section>
+  <section aria-labelledby="overall-title">
+    <h2 id="overall-title">Overall mode comparison</h2>
+    <div id="overall" class="scroll"></div>
+  </section>
+  <section aria-labelledby="scenario-title">
+    <h2 id="scenario-title">Scenario comparison</h2>
+    <div id="scenario-chart" class="chart"></div>
+    <div id="scenario-summary" class="scroll"></div>
+  </section>
+  <section id="records" aria-labelledby="records-title">
+    <h2 id="records-title">All recorded runs</h2>
+    <p class="muted">Recorded duration and clock difference are separate columns. Highlighted rows have a mismatch; the recorded data is preserved.</p>
+    <div id="records-table" class="scroll"></div>
+  </section>
+  <section aria-labelledby="radar-title">
+    <h2 id="radar-title">Recorded radar overview</h2>
+    <figure><img src="../screenshots/pipeline-comparison-radar.png" width="630" height="300" alt="Recorded radar comparing speed, action quality, context quality, efficiency and reported accuracy."><figcaption>The preserved radar uses the original evaluation's scales. Accuracy is reported in the write-up and is absent from the CSV fields. <a href="../screenshots/pipeline-comparison-radar.png">Open full size</a>.</figcaption></figure>
+  </section>
+  <section aria-labelledby="interpretation-title">
+    <h2 id="interpretation-title">Read the results in context</h2>
+    <div id="findings"></div>
+    <details><summary>Timing and data reconciliation</summary><p>Use the CSV's recorded <code>triage_time_s</code> values for the aggregate charts. Four runs differ from end minus start. The integrated analyst-step mean is 27/7 = 3.857…, displayed as 3.9. The earlier prose's 3.6 is not substituted into these calculations.</p></details>
+    <details><summary>Coverage and scoring</summary><p>The manual, model-only and integrated groups contain five, three and seven runs. Account changes and PowerShell have no model-only rows. Quality scores came from one evaluator; these comparisons describe the available controlled records.</p></details>
+  </section>
+  <noscript><p>Enable JavaScript to use filters and computed charts. The <a href="README.md">results table</a> and <a href="evaluation-results.csv">CSV</a> remain available.</p></noscript>
+  <footer>Data and charts describe recorded lab runs. Publication credits and the lab context are in the <a href="../README.md#credits-and-lab-context">README closing note</a>. <a href="../LICENSE">MIT license</a>.</footer>
+</main>
+<script id="evaluation-data" type="application/json">[{"run": 1, "attack_type": "Brute Force", "pipeline": "C", "pipeline_label": "AI Full", "start_time": "01:08:03", "end_time": "01:08:18", "triage_time_s": 39, "action_quality_5": 4, "context_quality_5": 4, "analyst_steps": 4, "notes": "Auto-summary; IRIS case created"}, {"run": 2, "attack_type": "Brute Force", "pipeline": "C", "pipeline_label": "AI Full", "start_time": "01:32:00", "end_time": "01:32:47", "triage_time_s": 47, "action_quality_5": 5, "context_quality_5": 5, "analyst_steps": 4, "notes": "Malicious IP confirmed HIGH via AbuseIPDB"}, {"run": 3, "attack_type": "File Hash", "pipeline": "C", "pipeline_label": "AI Full", "start_time": "02:20:00", "end_time": "02:20:15", "triage_time_s": 41, "action_quality_5": 4, "context_quality_5": 4, "analyst_steps": 3, "notes": "Legit hash (splunk-admon.exe); LOW severity; monitoring only"}, {"run": 4, "attack_type": "File Hash", "pipeline": "C", "pipeline_label": "AI Full", "start_time": "02:39:00", "end_time": "02:39:40", "triage_time_s": 40, "action_quality_5": 5, "context_quality_5": 5, "analyst_steps": 4, "notes": "DarkComet 67/72 VT vendors; CRITICAL; isolation guidance"}, {"run": 5, "attack_type": "PowerShell", "pipeline": "C", "pipeline_label": "AI Full", "start_time": "22:45:19", "end_time": "22:45:53", "triage_time_s": 34, "action_quality_5": 5, "context_quality_5": 4, "analyst_steps": 4, "notes": "HIGH; payload download+exec bypass; full pipeline 34s"}, {"run": 6, "attack_type": "Network Scanning", "pipeline": "C", "pipeline_label": "AI Full", "start_time": "23:37:30", "end_time": "23:37:40", "triage_time_s": 35.2, "action_quality_5": 4, "context_quality_5": 4, "analyst_steps": 4, "notes": "Ports 135/139/445; AbuseIPDB enrichment; Slack+IRIS auto"}, {"run": 7, "attack_type": "Admin Privilege Escalation", "pipeline": "C", "pipeline_label": "AI Full", "start_time": "23:50:45", "end_time": "23:50:52", "triage_time_s": 30.6, "action_quality_5": 5, "context_quality_5": 4, "analyst_steps": 4, "notes": "CRITICAL; priv esc + persistence detected; Slack+IRIS"}, {"run": 8, "attack_type": "Admin Privilege Escalation", "pipeline": "A", "pipeline_label": "Manual", "start_time": "23:50:06", "end_time": "23:52:56", "triage_time_s": 170, "action_quality_5": 3, "context_quality_5": 3, "analyst_steps": 6, "notes": "Manual Splunk review; correct classification but slow"}, {"run": 9, "attack_type": "PowerShell", "pipeline": "A", "pipeline_label": "Manual", "start_time": "22:45:10", "end_time": "22:48:15", "triage_time_s": 185, "action_quality_5": 3, "context_quality_5": 3, "analyst_steps": 6, "notes": "Manual flag review (-enc / IEX); correct but time-intensive"}, {"run": 10, "attack_type": "Network Scanning", "pipeline": "A", "pipeline_label": "Manual", "start_time": "23:37:15", "end_time": "23:41:35", "triage_time_s": 260, "action_quality_5": 3, "context_quality_5": 4, "analyst_steps": 7, "notes": "Manual firewall log review + AbuseIPDB lookup; highest manual time"}, {"run": 11, "attack_type": "File Hash", "pipeline": "A", "pipeline_label": "Manual", "start_time": "22:01:06", "end_time": "22:04:46", "triage_time_s": 220, "action_quality_5": 3, "context_quality_5": 4, "analyst_steps": 7, "notes": "Manual SHA256 lookup via VirusTotal; 7 steps required"}, {"run": 12, "attack_type": "Brute Force", "pipeline": "A", "pipeline_label": "Manual", "start_time": "21:29:36", "end_time": "21:33:06", "triage_time_s": 210, "action_quality_5": 3, "context_quality_5": 4, "analyst_steps": 7, "notes": "Manual login review + AbuseIPDB; 210s"}, {"run": 13, "attack_type": "Network Scanning", "pipeline": "B", "pipeline_label": "AI No Tools", "start_time": "22:27:03", "end_time": "22:28:53", "triage_time_s": 110, "action_quality_5": 4, "context_quality_5": 3, "analyst_steps": 3, "notes": "LLM summary only; no IP reputation validation"}, {"run": 14, "attack_type": "File Hash", "pipeline": "B", "pipeline_label": "AI No Tools", "start_time": "22:42:19", "end_time": "22:44:19", "triage_time_s": 120, "action_quality_5": 4, "context_quality_5": 3, "analyst_steps": 3, "notes": "LLM context only; no hash reputation check via VirusTotal"}, {"run": 15, "attack_type": "Brute Force", "pipeline": "B", "pipeline_label": "AI No Tools", "start_time": "22:34:44", "end_time": "22:37:24", "triage_time_s": 160, "action_quality_5": 4, "context_quality_5": 3, "analyst_steps": 3, "notes": "LLM brute-force identification; no IP reputation validation"}]</script>
+<script src="dashboard.js"></script>
+</body>
+</html>

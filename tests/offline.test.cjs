@@ -8,7 +8,7 @@ const {normalizeAlert, eventTime, publicIPv4} = require('../workflows/normalize-
 const {formatReport} = require('../workflows/format-report');
 const example = require('./example-alert.json');
 const root = path.resolve(__dirname, '..');
-const workflow = JSON.parse(fs.readFileSync(path.join(root, 'workflows/soc-pipeline.json'), 'utf8'));
+const workflow = JSON.parse(fs.readFileSync(path.join(root, 'workflows/pipeline-c.json'), 'utf8'));
 const nodes = Object.fromEntries(workflow.nodes.map(n => [n.name, n]));
 const input = () => ({body: structuredClone(example)});
 const report = () => ({title: 'Review authentication failures', summary: 'Three failures require context review.',
@@ -106,4 +106,35 @@ test('lookup expressions bind original indicators and reject absent values', () 
   alert.body.result.public_ip = '8.8.8.8';
   assert.equal(evaluate(abuse), '8.8.8.8');
   assert.match(evaluate(nodes['VirusTotal-Enrichment'].parameters.url), /\/8\.8\.8\.8$/);
+});
+
+for (const [name, id] of [['Failed Login', 15], ['Hash Detection', 7], ['Network Scanning', 11], ['Admin Account Creation', 17], ['PowerShell', 21]]) {
+  test('detection-specific IRIS classification: ' + name, () => {
+    const alert = input(); alert.body.search_name = name;
+    const result = formatReport(model(report()), normalizeAlert(alert));
+    assert.equal(result.irisAlertBody.alert_classification_id, id);
+    assert.match(result.irisAlertBody.alert_tags, /det-/);
+  });
+}
+test('source host, target and initiating account remain distinct indicators', () => {
+  const alert = input(); alert.body.result.target_account = 'lab-target'; alert.body.result.initiating_user = 'lab-admin';
+  const result = formatReport(model(report()), normalizeAlert(alert));
+  assert.ok(result.parsedReport.iocs.some(i => i.type === 'user' && i.value === 'lab-target'));
+  assert.ok(result.parsedReport.iocs.some(i => i.type === 'user' && i.value === 'lab-admin'));
+  assert.match(result.irisAlertBody.alert_note, /lab-target/);
+});
+test('model cannot introduce an indicator absent from the source event', () => {
+  const value = {...report(), iocs: [{type: 'ip', value: '9.9.9.9', verdict: 'unknown'}]};
+  assert.throws(() => formatReport(model(value), normalizeAlert(input())), /source alert/);
+});
+test('MITRE suggestions and detection tags survive the IRIS handoff', () => {
+  const value = {...report(), mitre_attack: [{tactic: 'Credential Access', technique_id: 'T1110', technique_name: 'Brute Force'}]};
+  const result = formatReport(model(value), normalizeAlert(input()));
+  assert.match(result.irisAlertBody.alert_tags, /mitre-T1110/);
+  assert.match(result.irisEscalateBody.case_tags, /tactic-credential-access/);
+  assert.match(result.slackMessage, /T1110/);
+});
+test('invalid MITRE suggestions stop formatting', () => {
+  const value = {...report(), mitre_attack: [{tactic: 'x', technique_id: 'http://bad', technique_name: 'x'}]};
+  assert.throws(() => formatReport(model(value), normalizeAlert(input())), /technique ID/);
 });

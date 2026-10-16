@@ -85,10 +85,10 @@
       <p class="eyebrow">Project overview</p>
       <h1>One alert.<br>A traceable investigation handoff.</h1>
       <p class="lead">Windows telemetry flows through Splunk and n8n to a structured advisory, an IRIS case handoff and a Slack notification.</p>
-      <span class="pill">Offline validation snapshot · 15 October 2026</span>
+      <span class="pill">Offline validation snapshot · 16 October 2026</span>
     </div>
     <div class="stats" aria-label="Repository snapshot">
-      <div class="stat"><strong>58</strong><span>passing offline tests</span></div>
+      <div class="stat"><strong>67</strong><span>passing offline tests</span></div>
       <div class="stat"><strong>5</strong><span>detection entry points</span></div>
       <div class="stat"><strong>6</strong><span>architecture stages</span></div>
     </div>
@@ -97,8 +97,8 @@
       <h2 id="architecture-title">A reviewable alert-to-case handoff</h2>
       <p class="muted">Input checks come before model analysis. Report validation separates an advisory from the payloads prepared for downstream services.</p>
       <figure>
-        <img src="images/pipeline.svg" width="1200" height="570" alt="Six stages: receive, normalize, analyze and enrich, validate, create case, notify analyst.">
-        <figcaption>Architecture illustration. <a href="images/pipeline.svg">Open full-size diagram</a>.</figcaption>
+        <img src="../screenshots/pipeline.svg" width="1200" height="570" alt="Six stages: receive, normalize, analyze and enrich, validate, create case, notify analyst.">
+        <figcaption>Architecture illustration. <a href="../screenshots/pipeline.svg">Open full-size diagram</a>.</figcaption>
       </figure>
       <div class="columns">
         <div class="tile"><h3>Preserve the source</h3><p>Carry the Splunk SID, host and event time into the alert payload. Bind indicator tools to normalized fields, not model-selected replacements.</p></div>
@@ -108,7 +108,7 @@
     <section id="detections" aria-labelledby="detections-title">
       <p class="eyebrow">02 / Detection inputs</p>
       <h2 id="detections-title">Five routes, one field contract</h2>
-      <p class="muted">Each request carries one result object, a stable SID, a source host and an unambiguous event time. <a href="DETECTIONS.md">Read the SPL examples and interpretation guidance</a>.</p>
+      <p class="muted">Each request carries one result object, a stable SID, a source host and an unambiguous event time. <a href="../splunk/validated-inputs.md">Read the SPL examples and interpretation guidance</a>.</p>
       <div class="table-wrap"><table>
         <caption>Detection coverage represented by the workflow inputs</caption>
         <thead><tr><th scope="col">Route</th><th scope="col">Telemetry</th><th scope="col">Analyst focus</th></tr></thead>
@@ -124,12 +124,12 @@
     <section id="validation" aria-labelledby="validation-title">
       <p class="eyebrow">03 / Local checks</p>
       <h2 id="validation-title">Deterministic checks, no API keys</h2>
-      <p>The 58-test offline suite checks timestamp parsing, field limits, indicator policy, model-response schema, severity boundaries, workflow links and embedded-code consistency.</p>
+      <p>The 67-test offline suite checks timestamp parsing, field limits, indicator policy, model-response schema, severity boundaries, workflow links, source-bound indicators, classification defaults, tags and embedded-code consistency.</p>
       <pre><code>node --test tests/offline.test.cjs</code></pre>
       <details><summary>Input-boundary checks</summary><p>Missing identifiers, invalid or ambiguous dates, nested values, oversized fields, invalid hashes and disallowed IP ranges are checked against the normalizer.</p></details>
       <details><summary>Report-formatting checks</summary><p>Fixed fixtures exercise strict JSON validation, numeric score bounds, deterministic severity, Slack escaping and the expected IRIS payload fields.</p></details>
       <details><summary>Workflow-export checks</summary><p>The suite checks graph targets, webhook connections, the inactive setting, credential/TLS safeguards and equality between readable JavaScript and embedded Code nodes.</p></details>
-      <p><a href="tests/offline.test.cjs">Inspect the tests</a> · <a href="workflows/soc-pipeline.json">Inspect the export</a></p>
+      <p><a href="../tests/offline.test.cjs">Inspect the tests</a> · <a href="../workflows/pipeline-c.json">Inspect the export</a></p>
     </section>
     <section id="deployment" aria-labelledby="deployment-title">
       <p class="eyebrow">04 / Deployment path</p>
@@ -141,9 +141,9 @@
         <li>Send one authorized alert to an authenticated test webhook.</li>
         <li>Inspect tool traces, IRIS identifiers and notification delivery before activation.</li>
       </ol>
-      <p><a href="SETUP.md">Follow the acceptance checklist</a> · <a href="WALKTHROUGH.md">View the screenshot walkthrough</a></p>
+      <p><a href="lab-environment.md">Follow the acceptance checklist</a> · <a href="walkthrough.md">View the screenshot walkthrough</a></p>
     </section>
   </main>
-  <footer><div class="shell"><p>Static project overview—not a live service monitor. Scope, credits and execution-verification status are centralized in the <a href="README.md#credits-and-verification-status">README closing note</a>. <a href="LICENSE">MIT license</a>.</p></div></footer>
+  <footer><div class="shell"><p>Static project overview. Publication credits and lab context are in the <a href="../README.md#credits-and-lab-context">README closing note</a>. <a href="../results/dashboard.html">Interactive evaluation</a> · <a href="../LICENSE">MIT license</a>.</p></div></footer>
 </body>
 </html>

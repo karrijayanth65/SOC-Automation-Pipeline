@@ -1,6 +1,6 @@
 # Detection Inputs
 
-[Home](README.md) · [Setup](SETUP.md) · [Walkthrough](WALKTHROUGH.md)
+[Home](../README.md) · [Setup](../docs/lab-environment.md) · [Walkthrough](../docs/walkthrough.md)
 
 ## Alert contract
 

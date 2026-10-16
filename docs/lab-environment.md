@@ -2,9 +2,9 @@
 
 [Home](../README.md) · [Detections](../splunk/validated-inputs.md) · [Walkthrough](walkthrough.md)
 
-The intended deployment is a single host. Installed Node.js, n8n, Splunk, DFIR-IRIS and model/provider versions, current runtime status and execution traces have not been supplied. Record them during controlled acceptance. This document combines historical layout context with configuration prerequisites; it is not evidence of a completed current deployment.
+Jayanth K built and completed the experiment in a personal lab. The recorded VM layout is shown below; the target for the revised deployment is a single host. Record the exact Node.js, n8n, Splunk, DFIR-IRIS and model/provider versions and execution traces when retesting the revised export.
 
-## Inherited historical lab layout
+## Recorded personal lab layout
 
 | Machine | Recorded OS | Role | Address | RAM | Disk |
 |---|---|---|---|---|---|
@@ -14,7 +14,7 @@ The intended deployment is a single host. Installed Node.js, n8n, Splunk, DFIR-I
 | DFIR-IRIS | Ubuntu 24.04 | Case management | 192.168.106.131 | 4 GB | 40 GB |
 | Kali | Rolling release | Authorized test traffic | 192.168.106.133 | 2 GB | 40 GB |
 
-Historical layout illustration; per-file origin and capture date remain unknown. This diagram does not establish the current single-host configuration. See the [asset manifest](../screenshots/manifest.csv).
+Lab layout illustration from the project. Capture dates are not recorded in the manifest; verify addressing against the host used for the next run. See the [asset manifest](../screenshots/manifest.csv).
 
 [Preserved lab network topology](../screenshots/lab-network-topology.png)
 
@@ -103,4 +103,4 @@ Use least-privilege credentials, rate limits, bounded retention and reviewed exe
 Model scores are advisory, not calibrated probabilities. Enrichment is requested through model tools and is not guaranteed on every eligible alert; inspect tool traces. No node disables an account, isolates a host or blocks an IP. Those actions remain analyst decisions.
 
 
-No current execution packet is available for this revision. Offline tests and CI validate fixture behavior only; version compatibility, live tool invocation and downstream delivery require the acceptance records above. The inherited images retain their original identities and are not current execution evidence. [Credits and lab context](../README.md#credits-and-lab-context).
+No current execution packet is available for this revision. Offline tests and CI validate fixture behavior only; version compatibility, live tool invocation and downstream delivery require the acceptance records above. The original lab images retain their captured account labels and values. [Credits and lab context](../README.md#credits-and-lab-context).

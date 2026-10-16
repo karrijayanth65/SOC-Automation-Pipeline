@@ -6,12 +6,12 @@ Baseline: `0f46773d53f53a3de78b937b56fb317c3977b317`. Implemented fixes are in t
 
 | Asset or section imbalance | Exact rectification | Status |
 |---|---|---|
-| README removed upstream credits | Restore `Credits and lab context` heading and link it near the introduction; retain MIT notices and exact upstream commit; qualify shared lab participation | Implemented |
+| Project authorship and lab context | Attribute the project and personal lab experiment to Jayanth K, as confirmed by the owner; distinguish the original experiment from later revisions | Corrected after owner clarification |
 | Workflow capture differs from export | Preserve historical PNG; label historical; document actual current graph in docs/current-workflow.md | Implemented labeling; actual new canvas/execution capture still required |
 | Slack image advertises formatting/links absent from formatter | Preserve and label historical; capture actual delivered output after integration, without editing results | Labeling implemented; new capture open |
 | IRIS captures contain historical identities/cases | Preserve original identities; obtain a separate current sanitized case with execution and case IDs | Labeling implemented; current evidence open |
 | Diagrams imply automated response/closure | Separate orchestration from manual analyst investigation, containment and closure in current graph | Current diagram supplied; old images preserved as historical/conceptual |
-| Primary accuracy radar lacks labels/predictions | Remove primary radar embeds; link preserved historical graphics with limitation | Implemented |
+| Accuracy radar lacks labels/predictions | Retain experiment graphics with a concise accuracy limitation beside the visuals | Implemented |
 | Historical evaluation durations disagree | Keep original CSV unchanged; identify runs 1, 3, 6, 7; label 81.8% descriptive only | Implemented |
 | Dashboard embeds duplicate records | Regenerate from CSV and compare generated data in CI | Implemented |
 | Asset provenance is incomplete | Maintain screenshots/manifest.csv with origin, source commit, capture date, status, execution ID, redactions and SHA-256; use unknown when unsupported | Implemented inventory; unknown evidence remains unknown |

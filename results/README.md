@@ -1,10 +1,10 @@
-# Historical Evaluation Results
+# Lab Experiment Results
 
 [Home](../README.md) · [Raw CSV](evaluation-results.csv) · [Interactive dashboard](dashboard.html) · [Scenarios](../docs/attack-scenarios.md)
 
-These 15 CSV rows are inherited historical observations. The supplied remediation guide reports a byte-for-byte match to the upstream source commit `41866043d4581ed85d4e921d26bb5e42625af299`; the comparison has not been independently repeated in this remediation. See [credits and lab context](../README.md#credits-and-lab-context).
+These 15 CSV rows record the experiment completed by **Jayanth K** in a personal SOC lab. The dataset and screenshots document the original experiment. See [project and lab context](../README.md#credits-and-lab-context).
 
-No current execution packet links these rows to the revised workflow. The [dashboard](dashboard.html) computes descriptions of the retained historical rows; it is not a current benchmark.
+The [dashboard](dashboard.html) computes the original experiment results. Later code-hardening changes were tested offline; rerun the experiment against the revised export to measure its behavior and performance.
 
 ## Method
 
@@ -22,7 +22,7 @@ Action and context quality use a five-point rubric:
 | 4 | Useful and specific | Good contextual explanation |
 | 5 | Specific and well-supported | Rich explanation with relevant validation |
 
-The inherited write-up describes one evaluator assigning the qualitative scores; this remediation has not re-scored the underlying cases. Analyst steps count discrete actions in the triage workflow.
+The recorded evaluation uses one evaluator assigning qualitative scores; the later code remediation has not re-scored those cases. Analyst steps count discrete actions in the triage workflow.
 
 ## Overall results
 
@@ -36,23 +36,23 @@ The values below are calculated from each mode's available CSV rows.
 | B: AI without tools | 3 | 130.0 s | 4.00 | 3.00 | 3.0 |
 | C: AI with enrichment | 7 | 38.1 s | 4.57 | 4.29 | 3.9 |
 
-Relative to the manual average, the recorded model-only time is 37.8% lower and the integrated time is 81.8% lower. These are descriptive historical comparisons across differently sized groups. They do not validate the current export or establish causal or production improvements.
+Relative to the manual average, the recorded model-only time is 37.8% lower and the integrated time is 81.8% lower. These are descriptive comparisons from the original lab experiment, with differently sized groups. They do not establish causal or production improvements. Measure the revised export in a separate repeat run.
 
-## Historical visuals
+## Experiment visuals
 
-These preserved graphics show the historical comparison. **Their accuracy axis is not supported by per-run labels or predictions in the CSV.** Use the numerical tables and [dashboard](dashboard.html) for directly computable metrics; these images do not establish current accuracy or production performance.
+These preserved graphics show the original experiment comparison. **Their accuracy axis is not supported by per-run labels or predictions in the CSV.** Use the numerical tables and [dashboard](dashboard.html) for directly computable metrics; these images do not establish current accuracy or production performance.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../screenshots/triage-comparison-dark.png">
-  <img src="../screenshots/triage-comparison.png" alt="Historical comparison radar with an unvalidated accuracy dimension">
+  <img src="../screenshots/triage-comparison.png" alt="Original experiment comparison radar with an unvalidated accuracy dimension">
 </picture>
 
-*Historical comparison graphic. [Light version](../screenshots/triage-comparison.png) · [Dark version](../screenshots/triage-comparison-dark.png). Speed and step-economy indices have different meanings; polygon area does not measure investigation quality.*
+*Original experiment comparison graphic. [Light version](../screenshots/triage-comparison.png) · [Dark version](../screenshots/triage-comparison-dark.png). Speed and step-economy indices have different meanings; polygon area does not measure investigation quality.*
 
 <details>
-<summary><strong>View the original historical evaluation radar</strong></summary>
+<summary><strong>View the original lab evaluation radar</strong></summary>
 
-![Original historical evaluation radar with unvalidated reported accuracy](../screenshots/pipeline-comparison-radar.png)
+![Original lab evaluation radar with unvalidated reported accuracy](../screenshots/pipeline-comparison-radar.png)
 
 *Original graphic retained unchanged. Its accuracy claim cannot be verified from the CSV. [Open full size](../screenshots/pipeline-comparison-radar.png).*
 
@@ -74,7 +74,7 @@ All originals remain intact; provenance gaps and checksums are recorded in the [
 
 - The integrated group contains 27 analyst steps across seven runs: `27 / 7 = 3.857…`, displayed as 3.9. The earlier published prose reports 3.6; the raw rows are preserved and the dashboard computes 3.9.
 - Runs 1, 3, 6 and 7 have durations that differ from end minus start. The dashboard displays both values and flags those rows rather than substituting a guessed time. See the exact discrepancies below.
-- The historical statement of 100% classification accuracy is reported in the original write-up, but has no accuracy column in the CSV. It is not recomputed here.
+- The original statement of 100% classification accuracy is reported in the original write-up, but has no accuracy column in the CSV. It is not recomputed here.
 - Counts and quality scores describe a small controlled dataset with unequal scenario coverage, single-evaluator scoring and manually recorded times.
 
 ## Reading the comparison

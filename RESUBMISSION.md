@@ -1,13 +1,13 @@
 # Remediation record
 
-Baseline: `0f46773d53f53a3de78b937b56fb317c3977b317`. Local remediation date: 16 October 2026. Deployment scope supplied by the owner: single host. This record distinguishes completed offline work from remaining integration requirements.
+Baseline: `0f46773d53f53a3de78b937b56fb317c3977b317`. Local remediation date: 16 October 2026. Deployment scope supplied by the owner: single host. Jayanth K confirms the project and recorded experiment were completed in a personal lab. This record distinguishes the original experiment from subsequent code changes and their remaining integration checks.
 
 | Guide finding | Change or disposition | Evidence and limitation |
 |---|---|---|
-| Missing attribution and README anchor | Restored credits, upstream source and contribution boundaries | README Credits and lab context; shared lab participation remains unverified |
-| Unsupported visual evidence | Historical/unknown assets labeled; primary accuracy radar displays removed; current flow documented | screenshots/manifest.csv and docs/current-workflow.md; no new execution screenshots fabricated |
+| Project authorship and lab context | Use Jayanth K as the professional project attribution | Owner-confirmed personal lab work and experiment; no shared-lab assumption |
+| Visual evidence and version differences | Original lab captures and charts restored with concise version captions; current flow documented | screenshots/manifest.csv and docs/current-workflow.md; original image bytes unchanged |
 | No current execution packet | Still open | Requires authorized lab run and sanitized source, model, provider, IRIS and Slack traces |
-| Historical evaluation inconsistencies | Historical status and timing limitations made explicit | Original CSV retained; dashboard data checked against canonical CSV; no new accuracy claim |
+| Recorded evaluation inconsistencies | Original experiment context and timing limitations made explicit | Original CSV retained; dashboard data checked against canonical CSV; no new accuracy claim |
 | Lost detection fields | Fixed optional field preservation, identity ambiguity and type contracts | workflows/normalize-alert.js and tests/normalization.test.cjs; per-detection required fields still need agreement |
 | Unsupported enrichment claims | Source IOC verdicts cannot be overwritten by model prose | tests/formatter-security.test.cjs; deterministic provider execution and provenance remain open; summary prose remains advisory |
 | Regex-only ATT&CK checking | Added pinned official derived STIX subset, license, hashes and semantic validator | data/README.md; unknown/revoked/deprecated/tactic-inconsistent mappings excluded; event relevance still requires review |
@@ -24,4 +24,4 @@ Baseline: `0f46773d53f53a3de78b937b56fb317c3977b317`. Local remediation date: 16
 
 Run `node scripts/check.cjs` using Node.js 24 (`npm run check` is an equivalent convenience command). Tests run offline and do not call external services. Local validation passed 135 tests on Node.js v24.19.0, followed by ATT&CK hash/catalog, workflow drift, historical dashboard equality and local file/fragment checks. The test transcript is stored under `evidence/offline/validation.txt`; it is fixture validation, not a current lab execution. See [Engineering Action Plan](Engineering_Action_Plan.md) for code changes and remaining implementation contracts. The final delivery note records the resulting commit.
 
-No current clean-machine deployment, provider integration, IRIS integration, Slack delivery or new performance experiment is asserted. The original source document and historical images/data remain intact.
+No current clean-machine deployment, provider integration, IRIS integration, Slack delivery or new performance experiment is asserted. The original source document and experiment images/data remain intact.

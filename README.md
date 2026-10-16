@@ -1,10 +1,10 @@
 # SOC Automation Pipeline
 
-From a Splunk alert to a structured triage advisory, an IRIS handoff and an analyst notification.
+Built and evaluated by **Jayanth K** in a personal SOC lab. The project takes a Splunk alert through structured triage, an IRIS handoff and analyst notification.
 
 `Splunk → n8n → GPT-4.1 Mini + AbuseIPDB / VirusTotal → DFIR-IRIS → Slack`
 
-[Setup](#setup-and-validation) · [Workflow](#workflow-and-analyst-handoff) · [Lab gallery](#lab-and-detection-gallery) · [Results](#historical-evaluation) · [Code](docs/prompts-and-code.md) · [Credits](#credits-and-lab-context)
+[Setup](#setup-and-validation) · [Workflow](#workflow-and-analyst-handoff) · [Lab gallery](#lab-and-detection-gallery) · [Results](#lab-evaluation) · [Code](docs/prompts-and-code.md) · [Credits](#credits-and-lab-context)
 
 ![Conceptual SOC pipeline overview](screenshots/pipeline-canva.png)
 
@@ -22,15 +22,15 @@ Five detection routes cover authentication failures, process hashes, network sca
 | Handoff | IRIS alert/case requests and a High/Critical Slack branch |
 | Checks | Offline regression tests, generated-code/data checks and CI configuration |
 
-Current validation is offline. The interface captures below are preserved historical lab views, not proof that the revised export has completed a live run. [Current implementation status](#current-implementation-status) · [Capture provenance](screenshots/manifest.csv).
+The captures below document the original lab experiment. Subsequent code-hardening changes have offline regression coverage; a new end-to-end run will measure the revised export. [Current implementation status](#current-implementation-status) · [Capture provenance](screenshots/manifest.csv).
 
 ## Workflow and analyst handoff
 
 ### n8n workflow
 
-![Historical n8n workflow canvas](screenshots/workflow-canvas.png)
+![Recorded lab n8n workflow canvas](screenshots/workflow-canvas.png)
 
-*Historical canvas: it shows `Set link`; the current export uses `Normalize alert`. [Open full-size image](screenshots/workflow-canvas.png) · [Current workflow export](workflows/pipeline-c.json).*
+*Original experiment canvas: it shows `Set link`; the current export uses `Normalize alert`. [Open full-size image](screenshots/workflow-canvas.png) · [Current workflow export](workflows/pipeline-c.json).*
 
 ### Analyst notification and case
 
@@ -40,22 +40,22 @@ Current validation is offline. The interface captures below are preserved histor
 <th align="left" width="50%">DFIR-IRIS case</th>
 </tr>
 <tr>
-<td valign="top"><a href="screenshots/slack-notification.png"><img src="screenshots/slack-notification.png" alt="Historical Slack notification with severity, summary and analyst recommendations" width="100%"></a></td>
-<td valign="top"><a href="screenshots/dfir-iris-case.png"><img src="screenshots/dfir-iris-case.png" alt="Historical DFIR-IRIS case showing source context and tags" width="100%"></a></td>
+<td valign="top"><a href="screenshots/slack-notification.png"><img src="screenshots/slack-notification.png" alt="Recorded lab Slack notification with severity, summary and analyst recommendations" width="100%"></a></td>
+<td valign="top"><a href="screenshots/dfir-iris-case.png"><img src="screenshots/dfir-iris-case.png" alt="Recorded lab DFIR-IRIS case showing source context and tags" width="100%"></a></td>
 </tr>
 </table>
 
-*Historical captures; click either image for full resolution. Slack formatting and links differ from the current formatter. The IRIS identity and case record belong to the recorded historical setup.*
+*Recorded lab captures; click either image for full resolution. Slack formatting and links differ from the current formatter. The IRIS account labels and case record are retained as captured during the experiment.*
 
 ### Investigation queue
 
-![Historical DFIR-IRIS case queue](screenshots/dfir-iris-cases-list.png)
+![Recorded lab DFIR-IRIS case queue](screenshots/dfir-iris-cases-list.png)
 
-*Historical queue showing case priorities and tags. [View full size](screenshots/dfir-iris-cases-list.png). Native IOC/asset creation and current delivery still require integration evidence.*
+*Recorded queue showing case priorities and tags. [View full size](screenshots/dfir-iris-cases-list.png). Native IOC/asset creation and current delivery still require integration evidence.*
 
 ## Lab and detection gallery
 
-The retained lab images explain the original multi-VM study. The intended current deployment is single-host; exact installed services and versions still need to be recorded.
+These images show the multi-VM setup used for the original lab experiment. The intended current deployment is single-host; exact installed services and versions still need to be recorded.
 
 ![Retained component architecture illustration](screenshots/architecture-diagram.png)
 
@@ -66,17 +66,17 @@ The retained lab images explain the original multi-VM study. The intended curren
 
 ### Virtual machines
 
-![Historical VMware lab overview](screenshots/vmware-lab-overview.png)
+![Recorded lab VMware lab overview](screenshots/vmware-lab-overview.png)
 
 ### Virtual network configuration
 
-![Historical VMware network configuration](screenshots/vmware-network-config.png)
+![Recorded lab VMware network configuration](screenshots/vmware-network-config.png)
 
 ### Lab topology
 
 ![Retained lab network topology](screenshots/lab-network-topology.png)
 
-*These images describe the retained historical setup. Capture dates and execution IDs are unknown where not recorded in the [asset manifest](screenshots/manifest.csv).*
+*These images describe the recorded lab setup. Capture dates and execution IDs are unknown where not recorded in the [asset manifest](screenshots/manifest.csv).*
 
 </details>
 
@@ -85,21 +85,21 @@ The retained lab images explain the original multi-VM study. The intended curren
 
 ### Saved alerts
 
-![Historical Splunk saved alerts](screenshots/splunk-alerts.png)
+![Recorded lab Splunk saved alerts](screenshots/splunk-alerts.png)
 
 ### Authentication search
 
-![Historical Splunk authentication-failure query](screenshots/splunk-brute-force-detection.png)
+![Recorded lab Splunk authentication-failure query](screenshots/splunk-brute-force-detection.png)
 
 ### Account-change search
 
-![Historical Splunk account-change query](screenshots/splunk-admin-detection.png)
+![Recorded lab Splunk account-change query](screenshots/splunk-admin-detection.png)
 
 ### Endpoint telemetry
 
-![Historical Sysmon process-creation events](screenshots/sysmon-event-viewer.png)
+![Recorded lab Sysmon process-creation events](screenshots/sysmon-event-viewer.png)
 
-*Historical interfaces retain their original values. Current [query examples](splunk/detection-rules.md) and [sender contracts](splunk/validated-inputs.md) use `index=jayanth-project`.*
+*Recorded interfaces retain their original values. Current [query examples](splunk/detection-rules.md) and [sender contracts](splunk/validated-inputs.md) use `index=jayanth-project`.*
 
 </details>
 
@@ -116,19 +116,19 @@ The retained lab images explain the original multi-VM study. The intended curren
 
 </details>
 
-## Historical evaluation
+## Lab evaluation
 
 The original dataset contains **15 runs**: 5 manual, 3 model-only and 7 with enrichment.
 
-| Historical mode | Runs | Mean triage time | Action quality / 5 | Context quality / 5 |
+| Experiment mode | Runs | Mean triage time | Action quality / 5 | Context quality / 5 |
 |---|---|---|---|---|
 | Manual | 5 | 209.0 s | 3.00 | 3.60 |
 | Model without tools | 3 | 130.0 s | 4.00 | 3.00 |
 | Model with enrichment | 7 | 38.1 s | 4.57 | 4.29 |
 
-The **81.8%** difference is descriptive of these inherited records. Unequal scenario coverage and timing discrepancies prevent treating it as a verified improvement for the updated workflow. The historical charts include an accuracy dimension that the CSV cannot validate.
+The **81.8%** difference describes the recorded experiment. The groups have unequal scenario coverage and four timing discrepancies, detailed in the results page. Retesting after the code changes will provide a comparable measurement for the revised workflow. The chart accuracy axis is not supported by per-run labels in the CSV.
 
-[View the comparison graphics and methodology](results/README.md#historical-visuals) · [Explore the dashboard](results/dashboard.html) · [Download the unchanged CSV](results/evaluation-results.csv).
+[View the comparison graphics and methodology](results/README.md#experiment-visuals) · [Explore the dashboard](results/dashboard.html) · [Download the unchanged CSV](results/evaluation-results.csv).
 
 ## Setup and validation
 
@@ -161,24 +161,16 @@ See [RESUBMISSION.md](RESUBMISSION.md) for the full fix/evidence mapping. No nod
 
 ## Credits and lab context
 
-Based on the [upstream source snapshot](https://github.com/C-Andr3ws/lara-soc-automation/tree/41866043d4581ed85d4e921d26bb5e42625af299), source commit `41866043d4581ed85d4e921d26bb5e42625af299`. Existing copyright and permission notices remain in [LICENSE](LICENSE).
+**Jayanth K** built this project, configured the personal lab and carried out the recorded experiment. The screenshots, dataset and original workflow document that work. Professional project attribution uses Jayanth K; see [LICENSE](LICENSE).
 
-The screenshots and evaluation are retained historical material. This revision includes AI-assisted code and documentation changes; historical results do not validate the revised export. Personal lab participation remains unverified without supporting tasks, dates and execution artifacts.
+The later remediation includes AI-assisted code and documentation changes, with offline regression results recorded separately. The original experiment remains part of the project's evidence; performance and delivery changes in the revised export should be measured in a new run.
 
-<details>
-<summary><strong>Contribution and evidence details</strong></summary>
-
-| Material | Attribution and scope |
+| Work | Project context |
 |---|---|
-| Evaluation CSV and historical study | Upstream inheritance reported by the supplied remediation guide |
-| Workflow, Slack and IRIS captures | Historical/inherited captures identified by the guide; original identities retained |
-| Other illustrations and images | Per-file origin is unknown where not evidenced; see the manifest |
-| Code, tests and documentation | Inspect repository commits for actual contributions; presence alone does not prove personal lab execution |
-| Remediation | AI-assisted edits and offline validation; current live results remain unverified |
-
-The guide reports 14 byte-for-byte image/diagram matches and a matching CSV at audited commit `0f46773d53f53a3de78b937b56fb317c3977b317`. The individual 14 matches have not all been independently mapped here. Reuse is documented; the available evidence does not establish fabrication, theft or sole authorship.
-
-</details>
+| Lab setup and experiment | Jayanth K's own lab work |
+| Workflow, Slack, IRIS and telemetry captures | Records from the original experiment; original files preserved |
+| Evaluation dataset | Original 15-run experiment; timing discrepancies retained transparently |
+| Subsequent hardening | Code, tests and documentation revisions with AI assistance and offline checks |
 
 **Image preservation:** every original image is retained unchanged, with SHA-256 checks in the [manifest](screenshots/manifest.csv). Add fresh captures and redacted derivatives separately. [Preservation requirement](docs/asset-preservation.md).
 

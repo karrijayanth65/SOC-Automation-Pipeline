@@ -43,4 +43,4 @@ npm test
 npm run check
 ```
 
-CI configuration runs these source checks on push and pull requests. Local output is retained in the [test transcript](../evidence/offline/validation.txt).
+CI runs these source checks on push and pull requests. Run `node scripts/check.cjs` to reproduce the complete suite locally.

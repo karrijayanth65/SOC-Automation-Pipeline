@@ -103,4 +103,4 @@ Use least-privilege credentials, rate limits, bounded retention and reviewed exe
 Model scores are advisory, not calibrated probabilities. Enrichment is requested through model tools and is not guaranteed on every eligible alert; inspect tool traces. No node disables an account, isolates a host or blocks an IP. Those actions remain analyst decisions.
 
 
-The lab execution sequence and documentation are complete. The included test transcript records the reproducible software checks; original lab screenshots retain their captured account labels, event times and values. [Credits and lab context](../README.md#credits-and-lab-context).
+The lab execution sequence and documentation are complete. The test suite reproduces the software checks; original lab screenshots retain their captured account labels, event times and values. [Credits and lab context](../README.md#credits-and-lab-context).

@@ -1,180 +1,146 @@
 # SOC Automation Pipeline
 
-**Completed personal SOC lab project by Jayanth K.** Built, executed and evaluated in a personal lab. The project takes a Splunk alert through structured triage, an IRIS handoff and analyst notification.
+**Jayanth K · Personal SOC lab project**
 
-`Splunk → n8n → GPT-4.1 Mini + AbuseIPDB / VirusTotal → DFIR-IRIS → Slack`
+Automating alert intake, enrichment-assisted triage and the handoff to an analyst through Splunk, n8n, DFIR-IRIS and Slack.
 
-[Setup](#setup-and-validation) · [Workflow](#workflow-and-analyst-handoff) · [Lab gallery](#lab-and-detection-gallery) · [Results](#lab-evaluation) · [Code](docs/prompts-and-code.md) · [Credits](#credits-and-lab-context)
+[Lab results](#lab-evaluation-and-manual-effort) · [Skills](#skills-demonstrated) · [Workflow](#workflow-and-analyst-handoff) · [Lab setup](#lab-environment) · [Source and setup](#source-and-reproduction)
 
-![Conceptual SOC pipeline overview](screenshots/pipeline-canva.png)
+![SOC automation pipeline overview](screenshots/pipeline-canva.png)
 
-*Conceptual overview. The [current exported flow](docs/current-workflow.md) documents the actual node order; investigation, response and closure are analyst tasks.*
+## Lab evaluation and manual effort
 
-## What the project includes
+Across the recorded lab groups, integrated triage averaged **38.1 seconds versus 209.0 seconds manually**—**81.8% lower recorded triage time**. The average recorded analyst-step count fell from **6.6 to 3.9**, a **41.6% reduction** using the unrounded means.
 
-Five detection routes cover authentication failures, process hashes, network scanning, account changes and PowerShell activity. The workflow normalizes source context, uses model-selected intelligence tools, validates the advisory and prepares IRIS and Slack payloads.
+![Recorded triage time and analyst-step comparison](screenshots/lab-outcomes.png)
 
-| Component | Included implementation |
+| Lab configuration | Runs | Mean triage time | Mean analyst steps | Context quality / 5 |
+|---|---|---|---|---|
+| Manual | 5 | 209.0 s | 6.6 | 3.60 |
+| Model without tools | 3 | 130.0 s | 3.0 | 3.00 |
+| Model with enrichment | 7 | 38.1 s | 3.9 | 4.29 |
+
+The workflow brings source context, indicator lookups, a structured advisory and case handoff into one path. This reduces repeated manual searching, copying and report preparation. Analyst steps measure recorded actions, not active analyst time; the time and effort percentages describe the available lab records.
+
+Model-only runs use fewer steps because they omit enrichment. The integrated mode combines the shortest recorded mean time with more investigation context. Group sizes and scenario coverage differ, and four rows have timing discrepancies; the [full evaluation](results/README.md) retains the calculation and timing notes.
+
+[Explore the interactive dashboard](results/dashboard.html) · [View all recorded comparison graphics](results/README.md#experiment-visuals) · [Inspect the original CSV](results/evaluation-results.csv)
+
+## Skills demonstrated
+
+| Skill | Applied project work |
 |---|---|
-| Intake | Five header-authenticated webhooks and a shared normalizer |
-| Analysis | Model advisory with source-bound AbuseIPDB and VirusTotal tools |
-| Validation | Input contracts, bounded report schema and pinned ATT&CK mappings |
-| Handoff | IRIS alert/case requests and a High/Critical Slack branch |
-| Checks | Offline regression tests, generated-code/data checks and CI configuration |
-
-The lab executions and documentation are complete. Screenshot capture and documentation review date: **16 October 2026**, confirmed by Jayanth K. Dates shown inside application records remain the original event or case timestamps. [Code reference](#current-implementation-status) · [Capture inventory](screenshots/manifest.csv).
+| Detection engineering | SPL searches for authentication failures, process hashes, scanning, account changes and PowerShell |
+| Endpoint investigation | Windows Security and Sysmon context, users, parent processes, command lines and SHA-256 indicators |
+| Workflow automation | Authenticated n8n webhooks, normalization, model/tool orchestration and downstream API requests |
+| Threat-intelligence triage | Source-bound AbuseIPDB and VirusTotal lookups with analyst interpretation |
+| Secure JavaScript | Input contracts, identity checks, bounded model responses, Slack escaping and pinned ATT&CK mapping validation |
+| Case communication | Structured IRIS advisory payloads, case tags and analyst-facing Slack notifications |
+| Engineering quality | Regression tests, source-generated workflow code, canonical chart data and CI checks |
 
 ## Workflow and analyst handoff
 
-### n8n workflow
+### n8n orchestration
 
-![Recorded lab n8n workflow canvas](screenshots/workflow-canvas.png)
+![Recorded n8n workflow canvas](screenshots/workflow-canvas.png)
 
-*Original experiment canvas: it shows `Set link`; the current export uses `Normalize alert`. [Open full-size image](screenshots/workflow-canvas.png) · [Current workflow export](workflows/pipeline-c.json).*
+*Recorded experiment canvas. The included [reference export](workflows/pipeline-c.json) uses `Normalize alert` in place of `Set link`. [Full-size canvas](screenshots/workflow-canvas.png).*
 
 ### Analyst notification and case
 
 <table>
+<tr><th align="left" width="50%">Slack notification</th><th align="left" width="50%">DFIR-IRIS case</th></tr>
 <tr>
-<th align="left" width="50%">Slack notification</th>
-<th align="left" width="50%">DFIR-IRIS case</th>
-</tr>
-<tr>
-<td valign="top"><a href="screenshots/slack-notification.png"><img src="screenshots/slack-notification.png" alt="Recorded lab Slack notification with severity, summary and analyst recommendations" width="100%"></a></td>
-<td valign="top"><a href="screenshots/dfir-iris-case.png"><img src="screenshots/dfir-iris-case.png" alt="Recorded lab DFIR-IRIS case showing source context and tags" width="100%"></a></td>
+<td valign="top"><a href="screenshots/slack-notification.png"><img src="screenshots/slack-notification.png" alt="Recorded Slack triage notification" width="100%"></a></td>
+<td valign="top"><a href="screenshots/dfir-iris-case.png"><img src="screenshots/dfir-iris-case.png" alt="Recorded DFIR-IRIS case with source context and tags" width="100%"></a></td>
 </tr>
 </table>
 
-*Recorded lab captures; click either image for full resolution. Slack formatting and links differ from the current formatter. The IRIS account labels and case record are retained as captured during the experiment.*
+*Recorded application views; click either image for full resolution. The captured Slack formatting belongs to that experiment version; [formatter source](workflows/format-report.js) describes the included code.*
 
 ### Investigation queue
 
-![Recorded lab DFIR-IRIS case queue](screenshots/dfir-iris-cases-list.png)
+![Recorded DFIR-IRIS investigation queue](screenshots/dfir-iris-cases-list.png)
 
-*Recorded queue showing case priorities and tags. [View full size](screenshots/dfir-iris-cases-list.png). The case view retains the source context and recorded case tags.*
+*Case priorities, source tags and investigation context. [Full-size queue](screenshots/dfir-iris-cases-list.png).*
 
-## Lab and detection gallery
+## Lab environment
 
-These images show the multi-VM setup used for the original lab experiment. The lab runs on a single host with the recorded virtual-machine roles shown below.
+The experiment uses Windows telemetry and dedicated SIEM, orchestration, case-management and test roles within the personal lab.
 
-![Retained component architecture illustration](screenshots/architecture-diagram.png)
+### Component architecture
 
-*Retained conceptual architecture, not a deployment verification. [Setup and communication paths](docs/lab-environment.md).*
+![Component architecture illustration](screenshots/architecture-diagram.png)
 
-<details>
-<summary><strong>View the VMware environment and network</strong></summary>
+*Conceptual architecture. The [export reference](docs/current-workflow.md) documents the actual included node order.*
 
 ### Virtual machines
 
-![Recorded lab VMware lab overview](screenshots/vmware-lab-overview.png)
+![VMware lab environment](screenshots/vmware-lab-overview.png)
 
 ### Virtual network configuration
 
-![Recorded lab VMware network configuration](screenshots/vmware-network-config.png)
+![VMware network configuration](screenshots/vmware-network-config.png)
 
-### Lab topology
+### Network topology
 
-![Retained lab network topology](screenshots/lab-network-topology.png)
+![Lab network topology](screenshots/lab-network-topology.png)
 
-*These images describe the recorded lab setup. Capture and review date: **16 October 2026**. The [asset manifest](screenshots/manifest.csv) preserves the original file hashes.*
+[Machine roles, communication paths and setup procedure](docs/lab-environment.md)
 
-</details>
+## Detection and endpoint evidence
 
-<details>
-<summary><strong>View the Splunk detections and endpoint telemetry</strong></summary>
+### Saved Splunk alerts
 
-### Saved alerts
+![Recorded Splunk saved alerts](screenshots/splunk-alerts.png)
 
-![Recorded lab Splunk saved alerts](screenshots/splunk-alerts.png)
+### Authentication failures
 
-### Authentication search
+![Splunk authentication-failure search](screenshots/splunk-brute-force-detection.png)
 
-![Recorded lab Splunk authentication-failure query](screenshots/splunk-brute-force-detection.png)
+### Account changes
 
-### Account-change search
+![Splunk account-change search](screenshots/splunk-admin-detection.png)
 
-![Recorded lab Splunk account-change query](screenshots/splunk-admin-detection.png)
+### Sysmon telemetry
 
-### Endpoint telemetry
+![Sysmon process-creation events](screenshots/sysmon-event-viewer.png)
 
-![Recorded lab Sysmon process-creation events](screenshots/sysmon-event-viewer.png)
+The [SPL examples](splunk/detection-rules.md) use `index=jayanth-project`. The [input contract](splunk/validated-inputs.md) documents the fields supplied to each route. Captured interfaces retain their original values.
 
-*Recorded interfaces retain their original values. Current [query examples](splunk/detection-rules.md) and [sender contracts](splunk/validated-inputs.md) use `index=jayanth-project`.*
+## Investigation lifecycle
 
-</details>
+![Incident-response lifecycle illustration](screenshots/incident-response-workflow.png)
 
-<details>
-<summary><strong>View the lifecycle illustration and alternate pipeline diagram</strong></summary>
+*The wider investigation includes analyst review, evidence collection, response choices and closure. These analyst activities are separate from the exported automation nodes.*
 
-![Retained incident-response lifecycle illustration](screenshots/incident-response-workflow.png)
-
-*Lifecycle illustration only: investigation, additional evidence collection, containment and closure are manual activities outside the export.*
+### Alternate pipeline view
 
 ![Alternate conceptual pipeline diagram](screenshots/pipeline.svg)
 
-*Alternate explanatory asset. The exported connections, rather than this illustration, define the implemented order. [Current graph](docs/current-workflow.md).*
+## Source and reproduction
 
-</details>
+| Reference | Contents |
+|---|---|
+| [n8n export](workflows/pipeline-c.json) | Inactive, credential-free workflow reference |
+| [Normalizer](workflows/normalize-alert.js) | Event context, identity, timestamp and indicator checks |
+| [Formatter](workflows/format-report.js) | Report parsing, ATT&CK checks and downstream payload construction |
+| [Prompt and code guide](docs/prompts-and-code.md) | Model contract and included source behavior |
+| [Lab setup](docs/lab-environment.md) | Service configuration and execution procedure |
+| [Tests](tests/offline.test.cjs) | Reproducible software checks; CI runs on push and pull requests |
 
-## Lab evaluation
-
-The original dataset contains **15 runs**: 5 manual, 3 model-only and 7 with enrichment.
-
-| Experiment mode | Runs | Mean triage time | Action quality / 5 | Context quality / 5 |
-|---|---|---|---|---|
-| Manual | 5 | 209.0 s | 3.00 | 3.60 |
-| Model without tools | 3 | 130.0 s | 4.00 | 3.00 |
-| Model with enrichment | 7 | 38.1 s | 4.57 | 4.29 |
-
-The **81.8%** difference describes the recorded experiment. The groups have unequal scenario coverage and four timing discrepancies, detailed in the results page. The chart accuracy axis is not supported by per-run labels in the CSV.
-
-[View the comparison graphics and methodology](results/README.md#experiment-visuals) · [Explore the dashboard](results/dashboard.html) · [Download the unchanged CSV](results/evaluation-results.csv).
-
-## Setup and validation
-
-1. Review the [service setup](docs/lab-environment.md) and [detection inputs](splunk/validated-inputs.md).
-2. Bind credentials in n8n and verify trusted URLs, tenant IDs and Slack routing. `env.example` is an inventory; n8n does not load it automatically.
-3. Run the complete local checks with Node.js 24:
+Use Node.js 24 to run the complete checks:
 
 ```bash
 node scripts/check.cjs
 ```
 
-4. For reproduction, import the [workflow reference](workflows/pipeline-c.json) inactive, bind environment-specific credentials and settings, then follow the documented lab sequence.
+Import the reference export inactive and bind credentials, URLs, tenant mappings and Slack routing in the target lab. `env.example` lists the configuration; importing the workflow does not automatically load it. In the included graph, IRIS escalation precedes the severity branch and High/Critical controls Slack. Model scores are advisory.
 
-The checks need no npm install and use no service credentials. [Saved offline results](evidence/offline/validation.txt) · [Remediation record](RESUBMISSION.md) · [Engineering plan](Engineering_Action_Plan.md) · [Rollback](ROLLBACK.md).
+<a id="credits-and-lab-context"></a>
 
-<a id="current-implementation-status"></a>
+## Author and lab context
 
-## Code reference
+**Jayanth K** built the project, configured the personal lab and completed the recorded experiment. Later source hardening includes AI-assisted code and documentation revisions. The original dataset and image files are preserved; capture and documentation review date: **16 October 2026**, as confirmed by Jayanth K. Application event/case timestamps remain unchanged.
 
-<details>
-<summary><strong>Included source files and exported node order</strong></summary>
-
-| File | What the linked file contains |
-|---|---|
-| [normalize-alert.js](workflows/normalize-alert.js) | Field preservation, scalar identity checks, timestamp/hash validation and external-IP eligibility |
-| [format-report.js](workflows/format-report.js) | Report parsing, score calculation, ATT&CK mapping checks, source-bound IOC context and payload construction |
-| [pipeline-c.json](workflows/pipeline-c.json) | An inactive, credential-free n8n workflow reference generated from those sources |
-| [tests](tests/offline.test.cjs) | Reproducible offline checks for the included code and workflow structure |
-
-The [export diagram](docs/current-workflow.md) documents this file's node order: IRIS escalation precedes the severity branch, and High/Critical controls the Slack branch. Model scores are advisory. Links describe the contents of the linked files.
-
-</details>
-
-## Credits and lab context
-
-**Jayanth K** built this project, configured the personal lab and carried out the recorded experiment. The screenshots, dataset and original workflow document that work. Professional project attribution uses Jayanth K; see [LICENSE](LICENSE).
-
-The completed work includes the lab experiment, execution review and documentation. Subsequent source hardening includes AI-assisted code and documentation changes, with reproducible regression results recorded separately. The published measurements remain the original 15-run dataset.
-
-| Work | Project context |
-|---|---|
-| Lab setup and experiment | Jayanth K's own lab work |
-| Workflow, Slack, IRIS and telemetry captures | Records from the original experiment; original files preserved |
-| Evaluation dataset | Original 15-run experiment; timing discrepancies retained transparently |
-| Subsequent hardening | Code, tests and documentation revisions with AI assistance and offline checks |
-
-**Image preservation:** every original image is retained unchanged, with SHA-256 checks in the [manifest](screenshots/manifest.csv). Add fresh captures and redacted derivatives separately. [Preservation requirement](docs/asset-preservation.md).
-
-Documentation updated 16 October 2026.
+[MIT license](LICENSE) · [Image inventory and checksums](screenshots/manifest.csv) · [Lab walkthrough](docs/walkthrough.md)

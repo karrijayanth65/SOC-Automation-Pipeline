@@ -40,13 +40,25 @@ Relative to the manual average, the recorded model-only time is 37.8% lower and 
 
 ## Historical visuals
 
-The original images are preserved but removed from primary result displays because the CSV has no per-run accuracy field. Their accuracy dimension is unvalidated and must not be cited as a current or real-world result:
+These preserved graphics show the historical comparison. **Their accuracy axis is not supported by per-run labels or predictions in the CSV.** Use the numerical tables and [dashboard](dashboard.html) for directly computable metrics; these images do not establish current accuracy or production performance.
 
-- [Original evaluation radar — historical, unvalidated](../screenshots/pipeline-comparison-radar.png)
-- [Light comparison radar — historical, unvalidated](../screenshots/triage-comparison.png)
-- [Dark comparison radar — historical, unvalidated](../screenshots/triage-comparison-dark.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../screenshots/triage-comparison-dark.png">
+  <img src="../screenshots/triage-comparison.png" alt="Historical comparison radar with an unvalidated accuracy dimension">
+</picture>
 
-The comparison radars mix normalized speed, quality and step-economy indices with an unsupported accuracy dimension. Fewer steps can mean omitted intelligence lookups. Do not compare polygon area as a measure of investigation quality. Asset origin gaps and hashes are recorded in the [manifest](../screenshots/manifest.csv).
+*Historical comparison graphic. [Light version](../screenshots/triage-comparison.png) · [Dark version](../screenshots/triage-comparison-dark.png). Speed and step-economy indices have different meanings; polygon area does not measure investigation quality.*
+
+<details>
+<summary><strong>View the original historical evaluation radar</strong></summary>
+
+![Original historical evaluation radar with unvalidated reported accuracy](../screenshots/pipeline-comparison-radar.png)
+
+*Original graphic retained unchanged. Its accuracy claim cannot be verified from the CSV. [Open full size](../screenshots/pipeline-comparison-radar.png).*
+
+</details>
+
+All originals remain intact; provenance gaps and checksums are recorded in the [manifest](../screenshots/manifest.csv).
 
 ## Results by scenario
 

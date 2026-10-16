@@ -253,12 +253,4 @@ SOC-Automation-Pipeline/
 
 `Splunk` · `n8n` · `OpenAI` · `AbuseIPDB` · `VirusTotal` · `DFIR-IRIS` · `Slack` · `VMware` · `Windows` · `Sysmon` · `JavaScript` · `HTML/CSS`
 
-## Credits and lab context
-
-Jayanth K describes this as shared lab work completed alongside Christopher Andrews on the same machine. The original [LARA SOC Automation publication](https://github.com/C-Andr3ws/lara-soc-automation/tree/41866043d4581ed85d4e921d26bb5e42625af299), recorded captures and evaluation dataset are credited to Christopher Andrews. Reuse follows the MIT license; the required copyright and permission notices remain in [LICENSE](LICENSE).
-
-The screenshots, diagrams and raw CSV retain the recorded identities, IP addresses, timestamps and technical values. They document the historical setup and can differ from the hardened deployment export. Jayanth K's publication includes revised documentation, input/output validation, offline tests, the icon-based architecture and the local interactive dashboard.
-
-The recorded lab evaluation and this publication update are separate activities. This update checked files, links, data calculations and offline code behavior; it did not repeat a live Splunk/n8n/IRIS integration run. The CSV remains unchanged, and reconciliation notes identify differences from the earlier published aggregates. The architecture illustrations and synthetic test fixture explain the deployment version.
-
 Documentation updated 16 October 2026.
